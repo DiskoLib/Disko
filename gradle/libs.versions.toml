@@ -1,0 +1,6 @@
+[versions]
+okhttp = "4.10.0"
+gson = "2.10.1"
+enhancedeventbus = "1.2.0"
+slf4j = "1.7.36"
+log4j = "2.20.0"
