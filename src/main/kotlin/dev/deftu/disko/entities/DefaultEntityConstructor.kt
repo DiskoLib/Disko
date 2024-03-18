@@ -3,7 +3,7 @@ package dev.deftu.disko.entities
 import com.google.gson.JsonObject
 import dev.deftu.disko.utils.Snowflake
 
-public class EntityConstructorImpl : EntityConstructor {
+public object DefaultEntityConstructor : EntityConstructor {
     override fun constructSelfUser(json: JsonObject): SelfUser? {
         val rawId = json.get("id")?.asLong ?: return null
         val id = Snowflake(rawId)

@@ -1,7 +1,7 @@
 package dev.deftu.disko
 
 import dev.deftu.disko.entities.EntityConstructor
-import dev.deftu.disko.entities.EntityConstructorImpl
+import dev.deftu.disko.entities.DefaultEntityConstructor
 import dev.deftu.disko.entities.SelfUser
 import dev.deftu.disko.gateway.DiskoGateway
 import dev.deftu.disko.gateway.DiskoGatewayImpl
@@ -59,11 +59,10 @@ public class Disko(
     public lateinit var httpClient: OkHttpClient
         private set
 
-    public var entityConstructor: EntityConstructor = EntityConstructorImpl()
+    public var entityConstructor: EntityConstructor = DefaultEntityConstructor
         private set
     public var selfUser: SelfUser? = null
         internal set
-    internal var gatewayBuilder: (Disko, Int) -> DiskoGateway = { instance, shardId -> DiskoGatewayImpl(instance, shardId) }
     internal val shardManager = ShardManager(this)
     public val presenceManager: PresenceManager = PresenceManager(this)
     public val intentManager: IntentManager = IntentManager(this)
