@@ -70,11 +70,16 @@ public class PresenceManager(
         updatePresence()
     }
 
+    public fun update(builder: PresenceUpdateBuilder) {
+        activities.addAll(builder.activities)
+        builder.status?.let { setStatus(it) }
+        builder.since?.let { setSince(it) }
+    }
+
     public fun update(callback: PresenceUpdateBuilder.() -> Unit) {
-        val presenceUpdateCallback = PresenceUpdateBuilder().apply(callback)
-        activities.addAll(presenceUpdateCallback.activities)
-        presenceUpdateCallback.status?.let { setStatus(it) }
-        presenceUpdateCallback.since?.let { setSince(it) }
+        val builder = PresenceUpdateBuilder()
+        builder.apply(callback)
+        update(builder)
     }
 
     private fun updatePresence() {
