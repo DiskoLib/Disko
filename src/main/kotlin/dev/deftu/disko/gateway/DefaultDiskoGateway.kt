@@ -9,7 +9,7 @@ import okhttp3.WebSocket
 import org.slf4j.LoggerFactory
 import java.net.ConnectException
 
-internal class DiskoGatewayImpl(
+internal class DefaultDiskoGateway(
     instance: Disko,
     shardId: Int
 ) : DiskoGateway(instance, shardId) {
