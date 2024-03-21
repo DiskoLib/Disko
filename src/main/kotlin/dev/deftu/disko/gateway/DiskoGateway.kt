@@ -23,10 +23,11 @@ public abstract class DiskoGateway(
 
     public var webSocket: WebSocket? = null
         protected set
+    public val heart: Heart = Heart(instance, this)
+    public val packetRegistry: PacketRegistry = PacketRegistry(this)
+
     internal var lastSeq = -1
     internal var sessionId: String? = null
-    internal val heart = Heart(instance, this)
-    public val packetRegistry: PacketRegistry = PacketRegistry(this)
 
     public abstract fun send(packet: BasePacket)
 
