@@ -9,11 +9,11 @@ import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import kotlin.math.roundToLong
 
-internal class Heart(
+public class Heart(
     private val instance: Disko,
     private val listener: DiskoGateway
 ) {
-    companion object {
+    private companion object {
         private val logger = LoggerFactory.getLogger("${DiskoConstants.NAME} Heart")
         private val scope = CoroutineScope(Dispatchers.IO)
     }
@@ -22,7 +22,7 @@ internal class Heart(
     private var lifetimeInterval = 0L
     private var receivedHello = false
 
-    fun hello(data: JsonObject) {
+    public fun hello(data: JsonObject) {
         val interval = data["heartbeat_interval"]?.asLong ?: return
         lifetimeInterval = interval
         receivedHello = true
@@ -33,7 +33,7 @@ internal class Heart(
         scheduleBeat(jittered)
     }
 
-    fun beat() {
+    public fun beat() {
         if (!receivedHello) return
 
         val leeway = (lifetimeInterval * Math.random() * 0.5).roundToLong()
@@ -41,7 +41,7 @@ internal class Heart(
         scheduleBeat(lifetimeInterval - leeway)
     }
 
-    fun close() {
+    public fun close() {
         job?.cancel()
         lifetimeInterval = 0
         receivedHello = false
