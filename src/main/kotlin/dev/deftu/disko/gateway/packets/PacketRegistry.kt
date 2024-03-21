@@ -57,4 +57,8 @@ public class PacketRegistry(
     public fun register(op: Int, name: String?, packet: KClass<out BasePacket>) {
         packets[Pair(op, name)] = packet
     }
+
+    public fun register(handler: PacketRegistrationHandler) {
+        handler.register(this)
+    }
 }

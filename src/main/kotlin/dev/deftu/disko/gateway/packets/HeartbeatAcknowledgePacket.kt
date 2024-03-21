@@ -4,6 +4,8 @@ import com.google.gson.JsonElement
 import dev.deftu.disko.gateway.DiskoGateway
 
 public class HeartbeatAcknowledgePacket : BasePacket {
+    public companion object : PacketRegistrationData(11, null, HeartbeatAcknowledgePacket::class)
+
     override fun createSendJson(
         listener: DiskoGateway
     ): JsonElement? = null

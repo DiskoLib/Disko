@@ -12,11 +12,12 @@ public abstract class DiskoGateway(
 ) : WebSocketListener() {
     public companion object {
         public fun DiskoGateway.registerDefaultPackets() {
-            packetRegistry.register(0, "READY", ReadyPacket::class)
-            packetRegistry.register(1, null, HeartbeatPacket::class)
-            packetRegistry.register(2, null, IdentifyPacket::class)
-            packetRegistry.register(10, null, HelloPacket::class)
-            packetRegistry.register(11, null, HeartbeatAcknowledgePacket::class)
+            packetRegistry.register(ReadyPacket)
+            packetRegistry.register(HeartbeatPacket)
+            packetRegistry.register(IdentifyPacket)
+            packetRegistry.register(PresenceUpdatePacket)
+            packetRegistry.register(HelloPacket)
+            packetRegistry.register(HeartbeatAcknowledgePacket)
         }
     }
 

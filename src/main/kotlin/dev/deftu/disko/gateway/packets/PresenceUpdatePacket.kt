@@ -13,6 +13,8 @@ public class PresenceUpdatePacket(
     private val status: OnlineStatus,
     private val since: Long?
 ) : BasePacket {
+    public companion object : PacketRegistrationData(3, null, PresenceUpdatePacket::class)
+
     public constructor() : this(emptyList(), OnlineStatus.ONLINE, null)
 
     override fun createSendJson(

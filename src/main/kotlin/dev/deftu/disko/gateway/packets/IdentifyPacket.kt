@@ -12,6 +12,8 @@ import dev.deftu.disko.utils.buildJsonArray
 public class IdentifyPacket(
     private val instance: Disko
 ) : BasePacket {
+    public companion object : PacketRegistrationData(2, null, IdentifyPacket::class)
+
     override fun createSendJson(
         listener: DiskoGateway
     ): JsonElement = buildJsonObject {
