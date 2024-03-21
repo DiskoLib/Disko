@@ -8,7 +8,6 @@ import dev.deftu.disko.gateway.DefaultDiskoGateway
 import dev.deftu.disko.shards.ShardManager
 import dev.deftu.disko.gateway.intents.IntentManager
 import dev.deftu.disko.presence.PresenceManager
-import dev.deftu.disko.presence.PresenceUpdateBuilder
 import okhttp3.OkHttpClient
 import org.slf4j.LoggerFactory
 import xyz.deftu.enhancedeventbus.EventBus
@@ -16,36 +15,10 @@ import xyz.deftu.enhancedeventbus.bus
 import xyz.deftu.enhancedeventbus.invokers.LMFInvoker
 
 public class Disko(
-    private val block: DiskoBuilder.() -> Unit = {}
+    block: DiskoBuilder.() -> Unit = {}
 ) {
     public companion object {
         private val logger = LoggerFactory.getLogger(DiskoConstants.NAME)
-    }
-
-    public class DiskoBuilder {
-        public var httpClient: OkHttpClient? = null
-        public var gatewayBuilder: ((Disko, Int) -> DiskoGateway)? = null
-
-        private var intentsBlock: IntentManager.() -> Unit = {}
-        private var presenceBlock: PresenceUpdateBuilder.() -> Unit = {}
-
-        public fun intents(block: IntentManager.() -> Unit) {
-            intentsBlock = block
-        }
-
-        public fun presence(block: PresenceUpdateBuilder.() -> Unit) {
-            presenceBlock = block
-        }
-
-        public fun build(): Disko =
-            Disko().also { applyTo(it) }
-
-        internal fun applyTo(instance: Disko) {
-            if (httpClient != null) instance.setHttpClient(httpClient!!)
-            if (gatewayBuilder != null) instance.setGatewayBuilder(gatewayBuilder!!)
-            instance.intentManager.apply(intentsBlock)
-            instance.presenceManager.update(presenceBlock)
-        }
     }
 
     public val eventBus: EventBus = bus {
