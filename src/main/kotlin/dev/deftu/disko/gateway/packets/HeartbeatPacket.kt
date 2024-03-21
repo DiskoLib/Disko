@@ -6,7 +6,6 @@ import dev.deftu.disko.gateway.DiskoGateway
 
 public class HeartbeatPacket : BasePacket {
     public companion object : PacketRegistrationData(1, null, HeartbeatPacket::class)
-    }
 
     override fun createSendJson(
         listener: DiskoGateway
