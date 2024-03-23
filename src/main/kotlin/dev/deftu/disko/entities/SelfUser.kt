@@ -30,7 +30,7 @@ public class SelfUser(
     override val publicFlags: List<UserFlag>
 ) : User {
     override val bot: Boolean = true
-    override val system: Boolean = true
+    override val system: Boolean = false
     override val avatar: String? = avatar
         get() = field ?: "https://cdn.discordapp.com/embed/avatars/${(id.value shr 22) % 6}.png"
 
