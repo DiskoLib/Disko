@@ -62,13 +62,11 @@ public abstract class DiskoGateway(
     public open fun handleUnknownMessage(type: UnknownMessageType, text: String) {
     }
 
-    override fun onOpen(webSocket: WebSocket, response: Response) {
     final override fun onOpen(webSocket: WebSocket, response: Response) {
         this.webSocket = webSocket
         onConnected(response)
     }
 
-    override fun onMessage(webSocket: WebSocket, text: String) {
     final override fun onMessage(webSocket: WebSocket, text: String) {
         val data = packetRegistry.parse(text) ?: return handleUnknownMessage(UnknownMessageType.PARSE, text)
         val (json, packet) = data
@@ -78,10 +76,13 @@ public abstract class DiskoGateway(
 
     final override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
         heart.close()
+        val opcode = GatewayCloseOpcode.from(code) ?: GatewayCloseOpcode.UNKNOWN_ERROR
+        onClosed(opcode, reason)
     }
 
     public enum class UnknownMessageType {
         PARSE,
+        TYPE,
         HANDLE
     }
 }
