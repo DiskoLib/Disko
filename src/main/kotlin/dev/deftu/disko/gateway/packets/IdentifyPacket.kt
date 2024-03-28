@@ -27,15 +27,13 @@ import dev.deftu.disko.gateway.DiskoGateway
 import dev.deftu.disko.gateway.intents.GatewayIntent
 import dev.deftu.disko.utils.buildJsonArray
 
-public class IdentifyPacket(
-    private val instance: Disko
-) : BasePacket {
 public class IdentifyPacket : BaseSendPacket {
     public companion object : PacketRegistrationData(2, null, IdentifyPacket::class)
 
     override fun createSendJson(
         listener: DiskoGateway
     ): JsonElement = buildJsonObject {
+        val instance = listener.instance
         add("token", instance.token)
         add("intents", GatewayIntent.calculate(*instance.intentManager.get().toTypedArray()))
 

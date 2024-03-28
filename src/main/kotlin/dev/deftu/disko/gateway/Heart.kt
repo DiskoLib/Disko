@@ -47,7 +47,7 @@ public class Heart(
 
         val jittered = (interval * Math.random()).roundToLong()
         logger.debug("Jittered heartbeat interval: $jittered")
-        listener.send(IdentifyPacket(instance))
+        listener.send(IdentifyPacket())
         scheduleBeat(jittered)
     }
 
