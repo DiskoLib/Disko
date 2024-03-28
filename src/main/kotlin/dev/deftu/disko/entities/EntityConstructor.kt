@@ -19,7 +19,9 @@
 package dev.deftu.disko.entities
 
 import com.google.gson.JsonObject
+import dev.deftu.disko.entities.guild.Guild
 
 public interface EntityConstructor {
     public fun constructSelfUser(json: JsonObject): SelfUser?
+    public fun constructGuild(json: JsonObject): Guild?
 }
