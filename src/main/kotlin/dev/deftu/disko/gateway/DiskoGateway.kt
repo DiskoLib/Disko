@@ -30,12 +30,16 @@ public abstract class DiskoGateway(
 ) : WebSocketListener() {
     public companion object {
         public fun DiskoGateway.registerDefaultPackets() {
-            packetRegistry.register(ReadyPacket)
-            packetRegistry.register(HeartbeatPacket)
+            // Send Events
             packetRegistry.register(IdentifyPacket)
-            packetRegistry.register(PresenceUpdatePacket)
-            packetRegistry.register(HelloPacket)
+            packetRegistry.register(HeartbeatPacket)
+
+            // Receive Events
             packetRegistry.register(HeartbeatAcknowledgePacket)
+            packetRegistry.register(HelloPacket)
+            packetRegistry.register(ReadyPacket)
+            packetRegistry.register(PresenceUpdatePacket)
+            packetRegistry.register(GuildCreatePacket)
         }
     }
 
