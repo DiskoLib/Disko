@@ -25,7 +25,6 @@ import dev.deftu.disko.gateway.DiskoGateway
 public class ReadyPacket : BaseReceivePacket {
     public companion object : PacketRegistrationData(0, "READY", ReadyPacket::class)
 
-
     override fun handleDataReceived(
         listener: DiskoGateway,
         data: JsonElement?,
@@ -33,12 +32,18 @@ public class ReadyPacket : BaseReceivePacket {
     ) {
         if (data == null || !data.isJsonObject) return
 
-        val userJson = data.asJsonObject["user"].asJsonObject
-        val selfUser = listener.instance.entityConstructor.constructSelfUser(userJson) ?: return
-        listener.instance.selfUser = selfUser
+        val sessionId = data.asJsonObject.get("session_id") ?: return
+        if (sessionId.isJsonNull) throw IllegalStateException("Session ID is null")
+        listener.sessionId = sessionId.asString
 
-        val rawSessionId = data.asJsonObject["session_id"] ?: return
-        listener.sessionId = rawSessionId.asString
+        val resumeGatewayUrl = data.asJsonObject.get("resume_gateway_url") ?: return
+        if (resumeGatewayUrl.isJsonNull) throw IllegalStateException("Resume Gateway URL is null")
+        listener.resumeGatewayUrl = resumeGatewayUrl.asString
+
+        val user = data.asJsonObject.get("user") ?: return
+        if (user.isJsonNull) throw IllegalStateException("User is null")
+        val selfUser = listener.instance.entityConstructor.constructSelfUser(user.asJsonObject) ?: return
+        listener.instance.selfUser = selfUser
 
         // TODO - guilds, private channels, presences, relationships
 

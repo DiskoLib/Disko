@@ -49,6 +49,7 @@ public abstract class DiskoGateway(
     public val packetRegistry: PacketRegistry = PacketRegistry(this)
 
     internal var lastSeq = -1
+    internal var resumeGatewayUrl: String? = null
     internal var sessionId: String? = null
 
     public abstract fun send(packet: BasePacket)
