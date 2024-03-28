@@ -1,6 +1,13 @@
 # Disko
 A Discord API wrapper built for Kotlin developers. Building towards a beautiful, clean and fully featured wrapping of Discord's REST and Gateway APIs, allowing you to create Discord Bots and Applications with ease in Kotlin.
 
+## Support
+- You can create an issue
+- You can join our [Discord server][discord]
+- Join our [Discord server][discord] for support
+- Just join our [Discord server][discord]
+- [Discord server][discord]
+
 ## Table of Contents
 1. [Setup](#setup)
 2. [Basic Usage](#basic-usage)
