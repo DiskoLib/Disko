@@ -32,6 +32,7 @@ public class ResumePacket : BaseSendPacket {
         if (listener.sessionId == null || listener.resumeGatewayUrl == null)
             throw IllegalStateException("Cannot resume without a session ID or resume URL")
 
+        listener.isResuming = true
         add("token", listener.instance.token)
         add("session_id", listener.sessionId!!)
         add("seq", listener.lastSeq)
