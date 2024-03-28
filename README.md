@@ -10,6 +10,7 @@ A Discord API wrapper built for Kotlin developers. Building towards a beautiful,
 6. [Related Projects](#related-projects)
 
 ## Setup
+**For now, you cannot use Disko in actual environments. It is an early ALPHA state.**  
 To use Disko in your project, add the following to your relevant build file:
 
 <details>
