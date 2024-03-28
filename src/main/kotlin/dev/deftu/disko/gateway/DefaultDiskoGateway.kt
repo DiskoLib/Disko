@@ -48,14 +48,12 @@ internal class DefaultDiskoGateway(
         logger.warn("Received unknown message at 'phase' ${type.name}: $text")
     }
 
-    override fun onOpen(webSocket: WebSocket, response: Response) {
-        super.onOpen(webSocket, response)
+    override fun onConnected(response: Response) {
         logger.info("Connected to gateway.")
     }
 
-    override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-        super.onClosed(webSocket, code, reason)
-        logger.info("Disconnected from gateway. Code: $code, reason: '$reason'")
+    override fun onClosed(opcode: GatewayCloseOpcode, reason: String) {
+        logger.info("Disconnected from gateway. Opcode: $opcode, reason: '$reason'")
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
