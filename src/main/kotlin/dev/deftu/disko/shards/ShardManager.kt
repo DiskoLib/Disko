@@ -47,6 +47,14 @@ public class ShardManager(
         shards.add(constructShard(shard.totalShards, shardId))
     }
 
+    public fun resumeShard(shardId: Int) {
+        val shard = getShard(shardId) ?: return
+        shard.gateway.close(1000, "Resuming")
+        shards.remove(shard)
+        shards.add(constructShard(shard.totalShards, shardId, shard.gatewayHandler.resumeGatewayUrl))
+        // TODO - shard.send(ResumePacket())
+    }
+
     public fun forEachShard(action: (Shard) -> Unit) {
         shards.forEach(action)
     }
@@ -58,16 +66,18 @@ public class ShardManager(
 
     private fun constructShard(
         totalShards: Int,
-        shardId: Int
+        shardId: Int,
+        customUrl: String? = null
     ): Shard {
         val listener = instance.gatewayBuilder(instance, shardId)
+        val shardUrl = customUrl ?: instance.gatewayMetadata.getUrl()
         return Shard(
             instance,
             shardId,
             totalShards,
             instance.httpClient.newWebSocket(
                 Request.Builder()
-                    .url(instance.gatewayMetadata.getUrl())
+                    .url(shardUrl)
                     .build(),
                 listener
             ),
