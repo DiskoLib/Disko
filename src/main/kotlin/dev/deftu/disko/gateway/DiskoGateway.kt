@@ -50,6 +50,7 @@ public abstract class DiskoGateway(
     public val heart: Heart = Heart(instance, this)
     public val packetRegistry: PacketRegistry = PacketRegistry(this)
 
+    internal var isResuming = false
     internal var lastSeq = -1
     internal var resumeGatewayUrl: String? = null
     internal var sessionId: String? = null
