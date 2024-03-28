@@ -30,6 +30,7 @@ import dev.deftu.disko.utils.buildJsonArray
 public class IdentifyPacket(
     private val instance: Disko
 ) : BasePacket {
+public class IdentifyPacket : BaseSendPacket {
     public companion object : PacketRegistrationData(2, null, IdentifyPacket::class)
 
     override fun createSendJson(
@@ -49,13 +50,5 @@ public class IdentifyPacket(
             add(listener.shardId)
             add(listener.instance.gatewayMetadata.getShards())
         })
-    }
-
-    override fun handleDataReceived(
-        listener: DiskoGateway,
-        data: JsonElement?,
-        seq: Int
-    ) {
-        // no-op
     }
 }

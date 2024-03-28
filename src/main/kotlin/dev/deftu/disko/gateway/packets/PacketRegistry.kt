@@ -61,6 +61,8 @@ public class PacketRegistry(
     }
 
     public fun jsonify(packet: BasePacket): String {
+        if (packet !is BaseSendPacket) throw IllegalArgumentException("Packet (${packet::class.qualifiedName}) is not sendable")
+
         val op = packets.entries.find {
             it.value == packet::class
         }?.key?.first ?: throw IllegalArgumentException("Packet (${packet::class.qualifiedName}) is not registered")

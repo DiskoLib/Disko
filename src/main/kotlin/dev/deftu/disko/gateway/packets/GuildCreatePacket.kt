@@ -19,21 +19,22 @@
 package dev.deftu.disko.gateway.packets
 
 import com.google.gson.JsonElement
+import dev.deftu.disko.events.GuildCreateEvent
 import dev.deftu.disko.gateway.DiskoGateway
-import kotlin.reflect.KClass
 
-public interface BasePacket
+public class GuildCreatePacket : BaseReceivePacket {
+    public companion object : PacketRegistrationData(0, "GUILD_CREATE", GuildCreatePacket::class)
 
-public interface PacketRegistrationHandler {
-    public fun register(registry: PacketRegistry)
-}
+    override fun handleDataReceived(
+        listener: DiskoGateway,
+        data: JsonElement?,
+        seq: Int
+    ) {
+        if (data == null || !data.isJsonObject) return
 
-public open class PacketRegistrationData(
-    public val op: Int,
-    public val name: String?,
-    public val packet: KClass<out BasePacket>
-) : PacketRegistrationHandler {
-    override fun register(registry: PacketRegistry) {
-        registry.register(op, name, packet)
+        val instance = listener.instance
+        val guild = instance.entityConstructor.constructGuild(data.asJsonObject) ?: return
+        instance.guildCache.addGuild(guild)
+        instance.eventBus.post(GuildCreateEvent(instance, listener.shardId, guild))
     }
 }

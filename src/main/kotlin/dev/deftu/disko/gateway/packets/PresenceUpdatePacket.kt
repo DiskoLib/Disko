@@ -30,7 +30,7 @@ public class PresenceUpdatePacket(
     private val activities: List<Activity>,
     private val status: OnlineStatus,
     private val since: Long?
-) : BasePacket {
+) : BaseSendPacket {
     public companion object : PacketRegistrationData(3, null, PresenceUpdatePacket::class)
 
     public constructor() : this(emptyList(), OnlineStatus.ONLINE, null)
@@ -44,13 +44,5 @@ public class PresenceUpdatePacket(
 
         add("status", status.status)
         addProperty("since", since)
-    }
-
-    override fun handleDataReceived(
-        listener: DiskoGateway,
-        data: JsonElement?,
-        seq: Int
-    ) {
-        // no-op
     }
 }

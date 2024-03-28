@@ -22,12 +22,9 @@ import com.google.gson.JsonElement
 import dev.deftu.disko.events.ReadyEvent
 import dev.deftu.disko.gateway.DiskoGateway
 
-public class ReadyPacket : BasePacket {
+public class ReadyPacket : BaseReceivePacket {
     public companion object : PacketRegistrationData(0, "READY", ReadyPacket::class)
 
-    override fun createSendJson(
-        listener: DiskoGateway
-    ): JsonElement? = null
 
     override fun handleDataReceived(
         listener: DiskoGateway,

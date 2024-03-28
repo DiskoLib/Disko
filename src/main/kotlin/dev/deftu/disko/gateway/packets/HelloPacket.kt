@@ -21,12 +21,8 @@ package dev.deftu.disko.gateway.packets
 import com.google.gson.JsonElement
 import dev.deftu.disko.gateway.DiskoGateway
 
-public class HelloPacket : BasePacket {
+public class HelloPacket : BaseReceivePacket {
     public companion object : PacketRegistrationData(10, null, HelloPacket::class)
-
-    override fun createSendJson(
-        listener: DiskoGateway
-    ): JsonElement? = null
 
     override fun handleDataReceived(
         listener: DiskoGateway,
