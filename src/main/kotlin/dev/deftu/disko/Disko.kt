@@ -18,6 +18,7 @@
 
 package dev.deftu.disko
 
+import dev.deftu.disko.cache.GuildCache
 import dev.deftu.disko.entities.EntityConstructor
 import dev.deftu.disko.entities.DefaultEntityConstructor
 import dev.deftu.disko.entities.SelfUser
@@ -54,6 +55,8 @@ public class Disko(
         private set
     public var selfUser: SelfUser? = null
         internal set
+    public val guildCache: GuildCache = GuildCache()
+
     internal var gatewayBuilder: (Disko, Int) -> DiskoGateway = { instance, shardId -> DefaultDiskoGateway(instance, shardId) }
     internal val shardManager = ShardManager(this)
     public val presenceManager: PresenceManager = PresenceManager(this)
