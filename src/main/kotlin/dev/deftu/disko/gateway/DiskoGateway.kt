@@ -53,20 +53,30 @@ public abstract class DiskoGateway(
 
     public abstract fun send(packet: BasePacket)
 
+    public open fun onConnected(response: Response) {
+    }
+
+    public open fun onClosed(opcode: GatewayCloseOpcode, reason: String) {
+    }
+
     public open fun handleUnknownMessage(type: UnknownMessageType, text: String) {
     }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
+    final override fun onOpen(webSocket: WebSocket, response: Response) {
         this.webSocket = webSocket
+        onConnected(response)
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
+    final override fun onMessage(webSocket: WebSocket, text: String) {
         val data = packetRegistry.parse(text) ?: return handleUnknownMessage(UnknownMessageType.PARSE, text)
         val (json, packet) = data
-        packet?.handleDataReceived(this, json, lastSeq) ?: handleUnknownMessage(UnknownMessageType.HANDLE, text)
+        if (packet !is BaseReceivePacket) return handleUnknownMessage(UnknownMessageType.TYPE, text)
+        packet.handleDataReceived(this, json, lastSeq) ?: handleUnknownMessage(UnknownMessageType.HANDLE, text)
     }
 
-    override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+    final override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
         heart.close()
     }
 
