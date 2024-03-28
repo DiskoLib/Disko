@@ -18,6 +18,7 @@
 
 package dev.deftu.disko
 
+import dev.deftu.disko.events.GuildCreateEvent
 import dev.deftu.disko.events.ReadyEvent
 import dev.deftu.disko.gateway.intents.GatewayIntent
 import dev.deftu.disko.presence.OnlineStatus
@@ -43,5 +44,9 @@ fun main() {
 
     disko.eventBus.on<ReadyEvent> { event ->
         logger.info("${event.selfUser.username} is ready")
+    }
+
+    disko.eventBus.on<GuildCreateEvent> { event ->
+        logger.info("Joined guild ${event.guild.name} - ${event.guild.getIconUrl()}")
     }
 }
