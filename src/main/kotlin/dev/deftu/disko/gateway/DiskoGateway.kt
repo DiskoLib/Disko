@@ -39,6 +39,7 @@ public abstract class DiskoGateway(
             packetRegistry.register(HeartbeatAcknowledgePacket)
             packetRegistry.register(HelloPacket)
             packetRegistry.register(ReadyPacket)
+            packetRegistry.register(ReconnectPacket)
             packetRegistry.register(PresenceUpdatePacket)
             packetRegistry.register(GuildCreatePacket)
         }
