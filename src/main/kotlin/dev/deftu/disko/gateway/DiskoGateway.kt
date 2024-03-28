@@ -32,6 +32,7 @@ public abstract class DiskoGateway(
         public fun DiskoGateway.registerDefaultPackets() {
             // Send Events
             packetRegistry.register(IdentifyPacket)
+            packetRegistry.register(ResumePacket)
             packetRegistry.register(HeartbeatPacket)
 
             // Receive Events
