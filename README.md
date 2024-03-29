@@ -1,4 +1,4 @@
-<img align="right" src="./.github/logo.png" height="256" width="256">
+<img align="right" src="./.github/logo.png" height="128" width="128">
 
 # Disko
 A Discord API wrapper built for Kotlin developers. Building towards a beautiful, clean and fully featured wrapping of Discord's REST and Gateway APIs, allowing you to create Discord Bots and Applications with ease in Kotlin.
