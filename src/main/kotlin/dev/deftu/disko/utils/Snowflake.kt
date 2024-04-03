@@ -68,7 +68,16 @@ public class Snowflake {
     public operator fun component4(): Byte = processId
     public operator fun component5(): Short = increment
 
-    override fun equals(other: Any?): Boolean = other is Snowflake && other.value == value
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other is Long) return value == other
+        if (other !is Snowflake) return false
+        return value == other.value
+    }
+
     override fun hashCode(): Int = value.hashCode()
     override fun toString(): String = value.toString()
+
+    public operator fun compareTo(other: Snowflake): Int = value.compareTo(other.value)
+    public operator fun compareTo(other: Long): Int = value.compareTo(other)
 }
