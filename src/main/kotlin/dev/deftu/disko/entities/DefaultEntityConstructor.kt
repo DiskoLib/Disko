@@ -19,21 +19,49 @@
 package dev.deftu.disko.entities
 
 import com.google.gson.JsonObject
+import dev.deftu.disko.Disko
+import dev.deftu.disko.entities.channel.*
+import dev.deftu.disko.entities.channel.VoiceRegion
+import dev.deftu.disko.entities.channel.impl.*
 import dev.deftu.disko.entities.guild.*
-import dev.deftu.disko.utils.Snowflake
+import dev.deftu.disko.utils.*
+import java.time.Instant
 
-public object DefaultEntityConstructor : EntityConstructor {
+public class DefaultEntityConstructor(
+    private val disko: Disko
+) : EntityConstructor {
+    override fun constructUser(json: JsonObject): User? {
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val username = json.maybeGetString("username") ?: return null
+        val discriminator = json.maybeGetString("discriminator") ?: return null
+        val avatar = json.maybeGetString("avatar")
+        val bot = json.maybeGetBoolean("bot") ?: false
+        val system = json.maybeGetBoolean("system") ?: false
+        val mfaEnabled = json.maybeGetBoolean("mfa_enabled") ?: false
+        val locale = Locale.from(json.maybeGetString("locale") ?: "en-US") ?: Locale.ENGLISH_US
+        val flags = UserFlag.from(json.maybeGetInteger("flags") ?: 0)
+
+        return User(
+            id,
+            username,
+            discriminator,
+            avatar,
+            bot,
+            system,
+            mfaEnabled,
+            locale,
+            flags
+        )
+    }
+
     override fun constructSelfUser(json: JsonObject): SelfUser? {
-        val rawId = json.get("id")?.asLong ?: return null
-        val id = Snowflake(rawId)
-        val username = json.get("username")?.asString ?: return null
-        val discriminator = json.get("discriminator")?.asString ?: "0"
-        val rawAvatar = json.get("avatar")
-        val avatar = if (rawAvatar != null && !rawAvatar.isJsonNull) rawAvatar.asString else null
-        val mfaEnabled = json.get("mfa_enabled")?.asBoolean ?: false
-        val locale = json.get("locale")?.asString ?: "en-US"
-        val rawFlags = json.get("flags")?.asInt ?: 0
-        val flags = UserFlag.from(rawFlags)
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val username = json.maybeGetString("username") ?: return null
+        val discriminator = json.maybeGetString("discriminator") ?: return null
+        val avatar = json.maybeGetString("avatar")
+        val mfaEnabled = json.maybeGetBoolean("mfa_enabled") ?: false
+        val locale = Locale.from(json.maybeGetString("locale") ?: "en-US") ?: Locale.ENGLISH_US
+        val flags = UserFlag.from(json.maybeGetInteger("flags") ?: 0)
 
         return SelfUser(
             id,
@@ -46,84 +74,101 @@ public object DefaultEntityConstructor : EntityConstructor {
         )
     }
 
+    override fun constructMember(json: JsonObject): Member? {
+        val user = constructUser(json.maybeGetJsonObject("user") ?: return null) ?: return null
+        val nick = json.maybeGetString("nick")
+        val avatar = json.maybeGetString("avatar")
+        //val roles = json.get("roles")?.asJsonArray?.map { it.asString } ?: emptyList()
+        val joinedAt = json.maybeGetString("joined_at")?.let { Instant.parse(it) } ?: return null
+        val premiumSince = json.maybeGetString("premium_since")?.let { Instant.parse(it) }
+        val deaf = json.maybeGetBoolean("deaf") ?: false
+        val mute = json.maybeGetBoolean("mute") ?: false
+        val pending = json.maybeGetBoolean("pending") ?: false
+        val permissions = Permission.from(json.maybeGetInteger("permissions") ?: 0)
+        val flags = MemberFlag.from(json.maybeGetInteger("flags") ?: 0)
+        val communicationDisabledUntil = json.maybeGetString("communication_disabled_until")?.let { Instant.parse(it) }
+
+        return Member(
+            user,
+            nick,
+            avatar,
+            //roles,
+            joinedAt,
+            premiumSince,
+            deaf,
+            mute,
+            flags,
+            pending,
+            permissions,
+            communicationDisabledUntil
+        )
+    }
+
     override fun constructGuild(json: JsonObject): Guild? {
-        val rawId = json.get("id")?.asLong ?: return null
-        val id = Snowflake(rawId)
-        val name = json.get("name")?.asString ?: return null
-        val rawIcon = json.get("icon")
-        val icon = if (rawIcon != null && !rawIcon.isJsonNull) rawIcon.asString else null
-        val rawSplash = json.get("splash")
-        val splash = if (rawSplash != null && !rawSplash.isJsonNull) rawSplash.asString else null
-        val rawDiscoverySplash = json.get("discovery_splash")
-        val discoverySplash = if (rawDiscoverySplash != null && !rawDiscoverySplash.isJsonNull) rawDiscoverySplash.asString else null
-        val owner = json.get("owner")?.asBoolean ?: false
-        val rawOwnerId = json.get("owner_id")?.asLong ?: return null
-        val ownerId = Snowflake(rawOwnerId)
-        val rawPermissions = json.get("permissions")?.asInt ?: 0
-        val permissions = Permission.from(rawPermissions)
-        // TODO - afkChannel
-        val afkTimeout = json.get("afk_timeout")?.asInt ?: 0
-        val widgetEnabled = json.get("widget_enabled")?.asBoolean ?: false
-        // TODO - widgetChannel
-        val rawVerificationLevel = json.get("verification_level")?.asInt ?: 0
-        val verificationLevel = VerificationLevel.from(rawVerificationLevel) ?: VerificationLevel.NONE
-        val rawDefaultMessageNotifications = json.get("default_message_notifications")?.asInt ?: 0
-        val defaultMessageNotifications = DefaultNotificationLevel.from(rawDefaultMessageNotifications) ?: DefaultNotificationLevel.ALL_MESSAGES
-        val rawExplicitContentFilter = json.get("explicit_content_filter")?.asInt ?: 0
-        val explicitContentFilter = ExplicitContentFilterLevel.from(rawExplicitContentFilter) ?: ExplicitContentFilterLevel.DISABLED
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val name = json.maybeGetString("name") ?: return null
+        val icon = json.maybeGetString("icon")
+        val splash = json.maybeGetString("splash")
+        val discoverySplash = json.maybeGetString("discovery_splash")
+        val isOwner = json.maybeGetBoolean("owner") ?: false
+        val ownerId = json.maybeGetSnowflake("owner_id") ?: return null
+        val permissions = Permission.from(json.maybeGetInteger("permissions") ?: 0)
+        val afkChannelId = json.maybeGetSnowflake("afk_channel_id")
+        val afkTimeout = json.maybeGetInteger("afk_timeout") ?: 0
+        val widgetEnabled = json.maybeGetBoolean("widget_enabled") ?: false
+        val widgetChannelId = json.maybeGetSnowflake("widget_channel_id")
+        val verificationLevel = VerificationLevel.from(json.maybeGetInteger("verification_level") ?: 0) ?: VerificationLevel.NONE
+        val defaultMessageNotifications = DefaultNotificationLevel.from(json.maybeGetInteger("default_message_notifications") ?: 0) ?: DefaultNotificationLevel.ALL_MESSAGES
+        val explicitContentFilter = ExplicitContentFilterLevel.from(json.maybeGetInteger("explicit_content_filter") ?: 0) ?: ExplicitContentFilterLevel.DISABLED
         val features = json.get("features")?.asJsonArray?.map { it.asString } ?: emptyList()
-        val rawMfaLevel = json.get("mfa_level")?.asInt ?: 0
-        val mfaLevel = GuildMfaLevel.from(rawMfaLevel) ?: GuildMfaLevel.NONE
-        val jsonApplicationId = json.get("application_id")
-        val rawApplicationId = if (jsonApplicationId != null && !jsonApplicationId.isJsonNull) jsonApplicationId.asLong else null
-        val applicationId = if (rawApplicationId != null) Snowflake(rawApplicationId) else null
-        // TODO - systemChannel
-        val rawSystemChannelFlags = json.get("system_channel_flags")?.asInt ?: 0
-        val systemChannelFlags = SystemChannelFlag.from(rawSystemChannelFlags)
-        // TODO - rulesChannel
-        val maxPresences = json.get("max_presences")?.asInt
-        val maxMembers = json.get("max_members")?.asInt
-        val rawVanityUrlCode = json.get("vanity_url_code")
-        val vanityUrlCode = if (rawVanityUrlCode != null && !rawVanityUrlCode.isJsonNull) rawVanityUrlCode.asString else null
-        val rawDescription = json.get("description")
-        val description = if (rawDescription != null && !rawDescription.isJsonNull) rawDescription.asString else null
-        val rawBanner = json.get("banner")
-        val banner = if (rawBanner != null && !rawBanner.isJsonNull) rawBanner.asString else null
-        val rawPremiumTier = json.get("premium_tier")?.asInt ?: 0
-        val premiumTier = BoostLevel.from(rawPremiumTier) ?: BoostLevel.NONE
-        val premiumSubscriptionCount = json.get("premium_subscription_count")?.asInt ?: 0
-        val rawPreferredLocale = json.get("preferred_locale")?.asString ?: "en-US"
-        val preferredLocale = Locale.from(rawPreferredLocale) ?: Locale.ENGLISH_US
-        // TODO - publicUpdatesChannel
-        val maxVideoChannelUsers = json.get("max_video_channel_users")?.asInt
-        val maxStageVideoChannelUsers = json.get("max_stage_video_channel_users")?.asInt
-        val approximateMemberCount = json.get("approximate_member_count")?.asInt ?: 0
-        val approximatePresenceCount = json.get("approximate_presence_count")?.asInt ?: 0
-        // TODO - welcomeScreen
-        val rawNsfwLevel = json.get("nsfw_level")?.asInt ?: 0
-        val nsfwLevel = NsfwLevel.from(rawNsfwLevel) ?: NsfwLevel.DEFAULT
+        val mfaLevel = GuildMfaLevel.from(json.maybeGetInteger("mfa_level") ?: 0) ?: GuildMfaLevel.NONE
+        val applicationId = json.maybeGetSnowflake("application_id")
+        val systemChannelId = json.maybeGetSnowflake("system_channel_id")
+        val systemChannelFlags = SystemChannelFlag.from(json.maybeGetInteger("system_channel_flags") ?: 0)
+        val rulesChannelId = json.maybeGetSnowflake("rules_channel_id")
+        val maxPresences = json.maybeGetInteger("max_presences")
+        val maxMembers = json.maybeGetInteger("max_members")
+        val vanityUrlCode = json.maybeGetString("vanity_url_code")
+        val description = json.maybeGetString("description")
+        val banner = json.maybeGetString("banner")
+        val premiumTier = BoostLevel.from(json.maybeGetInteger("premium_tier") ?: 0) ?: BoostLevel.NONE
+        val premiumSubscriptionCount = json.maybeGetInteger("premium_subscription_count") ?: 0
+        val preferredLocale = Locale.from(json.maybeGetString("preferred_locale") ?: "en-US") ?: Locale.ENGLISH_US
+        val publicUpdatesChannelId = json.maybeGetSnowflake("public_updates_channel_id")
+        val maxVideoChannelUsers = json.maybeGetInteger("max_video_channel_users")
+        val maxStageVideoChannelUsers = json.maybeGetInteger("max_stage_video_channel_users")
+        val approximateMemberCount = json.maybeGetInteger("approximate_member_count") ?: 0
+        val approximatePresenceCount = json.maybeGetInteger("approximate_presence_count") ?: 0
+        val welcomeScreen = json.maybeGetJsonObject("welcome_screen")?.let { constructGuildWelcomeScreen(it) }
+        val nsfwLevel = NsfwLevel.from(json.maybeGetInteger("nsfw_level") ?: 0) ?: NsfwLevel.DEFAULT
         // TODO - stageInstances
         // TODO - stickers
-        val premiumProgressBarEnabled = json.get("premium_progress_bar_enabled")?.asBoolean ?: false
+        val premiumProgressBarEnabled = json.maybeGetBoolean("premium_progress_bar_enabled") ?: false
+        val safetyAlertsChannelId = json.maybeGetSnowflake("safety_alerts_channel_id")
 
         return Guild(
+            disko,
             id,
             name,
             icon,
             splash,
             discoverySplash,
-            owner,
+            isOwner,
             ownerId,
             permissions,
+            afkChannelId,
             afkTimeout,
             widgetEnabled,
+            widgetChannelId,
             verificationLevel,
             defaultMessageNotifications,
             explicitContentFilter,
             features,
             mfaLevel,
             applicationId,
+            systemChannelId,
             systemChannelFlags,
+            rulesChannelId,
             maxPresences,
             maxMembers,
             vanityUrlCode,
@@ -132,12 +177,290 @@ public object DefaultEntityConstructor : EntityConstructor {
             premiumTier,
             premiumSubscriptionCount,
             preferredLocale,
+            publicUpdatesChannelId,
             maxVideoChannelUsers,
             maxStageVideoChannelUsers,
             approximateMemberCount,
             approximatePresenceCount,
+            welcomeScreen,
             nsfwLevel,
-            premiumProgressBarEnabled
+            premiumProgressBarEnabled,
+            safetyAlertsChannelId
+        )
+    }
+
+    override fun constructGuildWelcomeScreen(json: JsonObject): WelcomeScreen {
+        val description = json.maybeGetString("description")
+        val welcomeChannels = json.get("welcome_channels")?.asJsonArray?.mapNotNull { constructGuildWelcomeScreenChannel(it.asJsonObject) } ?: emptyList()
+
+        return WelcomeScreen(
+            description,
+            welcomeChannels
+        )
+    }
+
+    override fun constructGuildWelcomeScreenChannel(json: JsonObject): WelcomeScreenChannel? {
+        val channelId = json.maybeGetSnowflake("channel_id") ?: return null
+        val description = json.maybeGetString("description") ?: return null
+        val emojiId = json.maybeGetString("emoji_id")
+        val emojiName = json.maybeGetString("emoji_name")
+
+        return WelcomeScreenChannel(
+            channelId,
+            description,
+            emojiId,
+            emojiName
+        )
+    }
+
+    override fun constructPermissionOverwrite(json: JsonObject): PermissionOverwrite? {
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val type = PermissionOverwriteType.from(json.maybeGetString("type")) ?: return null
+        val allow = Permission.from(json.maybeGetInteger("allow") ?: 0)
+        val deny = Permission.from(json.maybeGetInteger("deny") ?: 0)
+
+        return when (type) {
+            PermissionOverwriteType.ROLE -> RolePermissionOverwrite(disko, id, allow, deny)
+            PermissionOverwriteType.MEMBER -> MemberPermissionOverwrite(disko, id, allow, deny)
+            else -> null
+        }
+    }
+
+    override fun constructVoiceRegion(json: JsonObject): VoiceRegion? {
+        val id = json.maybeGetString("id") ?: return null
+        val name = json.maybeGetString("name") ?: return null
+        val optimal = json.maybeGetBoolean("optimal") ?: false
+        val deprecated = json.maybeGetBoolean("deprecated") ?: false
+        val custom = json.maybeGetBoolean("custom") ?: false
+
+        return VoiceRegion(
+            id,
+            name,
+            optimal,
+            deprecated,
+            custom
+        )
+    }
+
+    override fun constructChannel(
+        shardId: Int,
+        guild: Guild?,
+        json: JsonObject
+    ): Channel? {
+        val type = ChannelType.from(json.maybeGetInteger("type") ?: 0) ?: return null
+
+        return when (type) {
+            ChannelType.GUILD_TEXT -> constructGuildMessageChannel(shardId, guild, json)
+            ChannelType.DM -> constructDirectMessageChannel(shardId, json)
+            ChannelType.GUILD_VOICE -> constructGuildVoiceChannel(shardId, guild, json)
+            ChannelType.GROUP_DM -> constructGroupDirectMessageChannel(shardId, json)
+            ChannelType.GUILD_CATEGORY -> constructGuildCategoryChannel(shardId, guild, json)
+            ChannelType.GUILD_ANNOUNCEMENT -> constructGuildAnnouncementChannel(shardId, guild, json)
+            else -> null
+        }
+    }
+
+    override fun constructGuildMessageChannel(
+        shardId: Int,
+        guild: Guild?,
+        json: JsonObject
+    ): GuildMessageChannel? {
+        guild ?: return null
+
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val type = ChannelType.from(json.maybeGetInteger("type") ?: 0) ?: ChannelType.GUILD_TEXT
+        val position = json.maybeGetInteger("position")
+        val permissionOverwrites = json.get("permission_overwrites")?.asJsonArray?.mapNotNull { constructPermissionOverwrite(it.asJsonObject) } ?: emptyList()
+        val topic = json.maybeGetString("topic") ?: ""
+        val nsfw = json.maybeGetBoolean("nsfw") ?: false
+        val rateLimitPerUser = json.maybeGetInteger("rate_limit_per_user") ?: 0
+        val parentId = json.maybeGetSnowflake("parent_id")
+        val parent = if (parentId != null) disko.channelCache.getGuildChannel(parentId) else null
+        val lastPinTimestamp = json.maybeGetString("last_pin_timestamp")?.let { Instant.parse(it) }
+        val name = json.maybeGetString("name") ?: return null
+        val lastMessageId = json.maybeGetSnowflake("last_message_id")
+
+        return GuildMessageChannel(
+            disko,
+            shardId,
+            id,
+            type,
+            guild,
+            position,
+            permissionOverwrites,
+            topic,
+            nsfw,
+            rateLimitPerUser,
+            parent,
+            name,
+            lastMessageId,
+            lastPinTimestamp
+        )
+    }
+
+    override fun constructDirectMessageChannel(
+        shardId: Int,
+        json: JsonObject
+    ): DirectMessageChannel? {
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val type = ChannelType.from(json.maybeGetInteger("type") ?: 0) ?: ChannelType.DM
+        val name = json.maybeGetString("name") ?: return null
+        val lastMessageId = json.maybeGetSnowflake("last_message_id")
+        val recipients = json.get("recipients")?.asJsonArray?.mapNotNull { constructUser(it.asJsonObject) } ?: emptyList()
+        val lastPinTimestamp = json.maybeGetString("last_pin_timestamp")?.let { Instant.parse(it) }
+
+        return DirectMessageChannel(
+            disko,
+            shardId,
+            id,
+            type,
+            name,
+            lastMessageId,
+            lastPinTimestamp,
+            recipients
+        )
+    }
+
+    override fun constructGuildVoiceChannel(
+        shardId: Int,
+        guild: Guild?,
+        json: JsonObject
+    ): GuildVoiceChannel? {
+        guild ?: return null
+
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val type = ChannelType.from(json.maybeGetInteger("type") ?: 0) ?: ChannelType.GUILD_VOICE
+        val position = json.maybeGetInteger("position")
+        val permissionOverwrites = json.get("permission_overwrites")?.asJsonArray?.mapNotNull { constructPermissionOverwrite(it.asJsonObject) } ?: emptyList()
+        val topic = json.maybeGetString("topic") ?: ""
+        val nsfw = json.maybeGetBoolean("nsfw") ?: false
+        val rateLimitPerUser = json.maybeGetInteger("rate_limit_per_user") ?: 0
+        val parentId = json.maybeGetSnowflake("parent_id")
+        val parent = if (parentId != null) disko.channelCache.getGuildChannel(parentId) else null
+        val name = json.maybeGetString("name") ?: return null
+        val lastMessageId = json.maybeGetSnowflake("last_message_id")
+        val lastPinTimestamp = json.maybeGetString("last_pin_timestamp")?.let { Instant.parse(it) }
+        val userLimit = json.maybeGetInteger("user_limit") ?: 0
+        val status = json.maybeGetString("status") ?: ""
+        val region = json.maybeGetString("rtc_region")?.let { disko.voiceRegions.getRegionById(it) }
+        val bitrate = json.maybeGetInteger("bitrate") ?: 0
+
+        return GuildVoiceChannel(
+            disko,
+            shardId,
+            id,
+            type,
+            guild,
+            position,
+            permissionOverwrites,
+            topic,
+            nsfw,
+            rateLimitPerUser,
+            parent,
+            name,
+            lastMessageId,
+            lastPinTimestamp,
+            userLimit,
+            status,
+            region,
+            bitrate
+        )
+    }
+
+    override fun constructGroupDirectMessageChannel(
+        shardId: Int,
+        json: JsonObject
+    ): GroupDirectMessageChannel? {
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val type = ChannelType.from(json.maybeGetInteger("type") ?: 0) ?: ChannelType.GROUP_DM
+        val name = json.maybeGetString("name") ?: return null
+        val lastMessageId = json.maybeGetSnowflake("last_message_id")
+        val lastPinTimestamp = json.maybeGetString("last_pin_timestamp")?.let { Instant.parse(it) }
+        val recipients = json.get("recipients")?.asJsonArray?.mapNotNull { constructUser(it.asJsonObject) } ?: emptyList()
+        val icon = json.maybeGetString("icon")
+        val ownerId = json.maybeGetSnowflake("owner_id") ?: return null
+
+        return GroupDirectMessageChannel(
+            disko,
+            shardId,
+            id,
+            type,
+            name,
+            lastMessageId,
+            lastPinTimestamp,
+            recipients,
+            icon,
+            ownerId
+        )
+    }
+
+    override fun constructGuildCategoryChannel(
+        shardId: Int,
+        guild: Guild?,
+        json: JsonObject
+    ): GuildCategoryChannel? {
+        guild ?: return null
+
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val type = ChannelType.from(json.maybeGetInteger("type") ?: 0) ?: ChannelType.GUILD_CATEGORY
+        val position = json.maybeGetInteger("position")
+        val permissionOverwrites = json.get("permission_overwrites")?.asJsonArray?.mapNotNull { constructPermissionOverwrite(it.asJsonObject) } ?: emptyList()
+        val name = json.maybeGetString("name") ?: return null
+        val nsfw = json.maybeGetBoolean("nsfw") ?: false
+        val parentId = json.maybeGetSnowflake("parent_id")
+        val parent = if (parentId != null) disko.channelCache.getGuildChannel(parentId) else null
+
+        return GuildCategoryChannel(
+            disko,
+            shardId,
+            id,
+            type,
+            guild,
+            position,
+            permissionOverwrites,
+            "",
+            nsfw,
+            0,
+            parent,
+            name
+        )
+    }
+
+    override fun constructGuildAnnouncementChannel(
+        shardId: Int,
+        guild: Guild?,
+        json: JsonObject
+    ): GuildAnnouncementChannel? {
+        guild ?: return null
+
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val type = ChannelType.from(json.maybeGetInteger("type") ?: 0) ?: ChannelType.GUILD_ANNOUNCEMENT
+        val position = json.maybeGetInteger("position")
+        val permissionOverwrites = json.get("permission_overwrites")?.asJsonArray?.mapNotNull { constructPermissionOverwrite(it.asJsonObject) } ?: emptyList()
+        val topic = json.maybeGetString("topic") ?: ""
+        val nsfw = json.maybeGetBoolean("nsfw") ?: false
+        val rateLimitPerUser = json.maybeGetInteger("rate_limit_per_user") ?: 0
+        val parentId = json.maybeGetSnowflake("parent_id")
+        val parent = if (parentId != null) disko.channelCache.getGuildChannel(parentId) else null
+        val lastPinTimestamp = json.maybeGetString("last_pin_timestamp")?.let { Instant.parse(it) }
+        val name = json.maybeGetString("name") ?: return null
+        val lastMessageId = json.maybeGetSnowflake("last_message_id")
+
+        return GuildAnnouncementChannel(
+            disko,
+            shardId,
+            id,
+            type,
+            guild,
+            position,
+            permissionOverwrites,
+            topic,
+            nsfw,
+            rateLimitPerUser,
+            parent,
+            name,
+            lastMessageId,
+            lastPinTimestamp
         )
     }
 }

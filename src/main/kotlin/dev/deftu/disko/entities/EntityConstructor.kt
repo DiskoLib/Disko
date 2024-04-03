@@ -19,9 +19,57 @@
 package dev.deftu.disko.entities
 
 import com.google.gson.JsonObject
+import dev.deftu.disko.entities.channel.Channel
+import dev.deftu.disko.entities.channel.PermissionOverwrite
+import dev.deftu.disko.entities.channel.VoiceRegion
+import dev.deftu.disko.entities.channel.impl.*
 import dev.deftu.disko.entities.guild.Guild
+import dev.deftu.disko.entities.guild.WelcomeScreen
+import dev.deftu.disko.entities.guild.WelcomeScreenChannel
 
 public interface EntityConstructor {
+    public fun constructUser(json: JsonObject): User?
     public fun constructSelfUser(json: JsonObject): SelfUser?
+
+    public fun constructMember(json: JsonObject): Member?
+
     public fun constructGuild(json: JsonObject): Guild?
+    public fun constructGuildWelcomeScreen(json: JsonObject): WelcomeScreen
+    public fun constructGuildWelcomeScreenChannel(json: JsonObject): WelcomeScreenChannel?
+
+    public fun constructPermissionOverwrite(json: JsonObject): PermissionOverwrite?
+    public fun constructVoiceRegion(json: JsonObject): VoiceRegion?
+    public fun constructChannel(
+        shardId: Int,
+        guild: Guild?,
+        json: JsonObject
+    ): Channel?
+    public fun constructGuildMessageChannel(
+        shardId: Int,
+        guild: Guild?,
+        json: JsonObject
+    ): GuildMessageChannel?
+    public fun constructDirectMessageChannel(
+        shardId: Int,
+        json: JsonObject
+    ): DirectMessageChannel?
+    public fun constructGuildVoiceChannel(
+        shardId: Int,
+        guild: Guild?,
+        json: JsonObject
+    ): GuildVoiceChannel?
+    public fun constructGroupDirectMessageChannel(
+        shardId: Int,
+        json: JsonObject
+    ): GroupDirectMessageChannel?
+    public fun constructGuildCategoryChannel(
+        shardId: Int,
+        guild: Guild?,
+        json: JsonObject
+    ): GuildCategoryChannel?
+    public fun constructGuildAnnouncementChannel(
+        shardId: Int,
+        guild: Guild?,
+        json: JsonObject
+    ): GuildAnnouncementChannel?
 }
