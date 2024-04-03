@@ -59,6 +59,7 @@ public class Disko(
 
     internal var gatewayBuilder: (Disko, Int) -> DiskoGateway = { instance, shardId -> DefaultDiskoGateway(instance, shardId) }
     internal val shardManager = ShardManager(this)
+    public val voiceRegions: VoiceRegions = VoiceRegions(this)
     public val presenceManager: PresenceManager = PresenceManager(this)
     public val intentManager: IntentManager = IntentManager(this)
 
