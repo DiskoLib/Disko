@@ -55,6 +55,8 @@ public class Disko(
         private set
     public var selfUser: SelfUser? = null
         internal set
+
+    public val userCache: UserCache = UserCache()
     public val guildCache: GuildCache = GuildCache()
 
     internal var gatewayBuilder: (Disko, Int) -> DiskoGateway = { instance, shardId -> DefaultDiskoGateway(instance, shardId) }
