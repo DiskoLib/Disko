@@ -21,17 +21,21 @@ package dev.deftu.disko.entities
 import dev.deftu.disko.utils.Snowflake
 
 public class SelfUser(
-    override val id: Snowflake,
-    override val username: String,
-    override val discriminator: String,
+    id: Snowflake,
+    username: String,
+    discriminator: String,
     avatar: String?,
-    override val mfaEnabled: Boolean,
-    override val locale: String?,
-    override val publicFlags: List<UserFlag>
-) : User {
-    override val bot: Boolean = true
-    override val system: Boolean = false
-    override val avatar: String? = avatar
-        get() = field ?: "https://cdn.discordapp.com/embed/avatars/${(id.value shr 22) % 6}.png"
-
-}
+    mfaEnabled: Boolean,
+    locale: Locale,
+    publicFlags: List<UserFlag>
+) : User(
+    id,
+    username,
+    discriminator,
+    avatar,
+    true,
+    false,
+    mfaEnabled,
+    locale,
+    publicFlags
+)
