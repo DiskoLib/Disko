@@ -59,3 +59,42 @@ public fun buildJsonArray(init: JsonArray.() -> Unit): JsonArray {
     array.init()
     return array
 }
+
+public fun JsonObject.maybeGet(key: String): JsonElement? {
+    return if (has(key)) get(key) else null
+}
+
+public fun JsonObject.maybeGetString(key: String): String? {
+    val element = maybeGet(key)
+    return if (element != null && element.isJsonPrimitive) element.asString else null
+}
+
+public fun JsonObject.maybeGetInteger(key: String): Int? {
+    val element = maybeGet(key)
+    return if (element != null && element.isJsonPrimitive) element.asInt else null
+}
+
+public fun JsonObject.maybeGetLong(key: String): Long? {
+    val element = maybeGet(key)
+    return if (element != null && element.isJsonPrimitive) element.asLong else null
+}
+
+public fun JsonObject.maybeGetSnowflake(key: String): Snowflake? {
+    val element = maybeGet(key)
+    return if (element != null && element.isJsonPrimitive) Snowflake(element.asLong) else null
+}
+
+public fun JsonObject.maybeGetBoolean(key: String): Boolean? {
+    val element = maybeGet(key)
+    return if (element != null && element.isJsonPrimitive) element.asBoolean else null
+}
+
+public fun JsonObject.maybeGetJsonObject(key: String): JsonObject? {
+    val element = maybeGet(key)
+    return if (element != null && element.isJsonObject) element.asJsonObject else null
+}
+
+public fun JsonObject.maybeGetJsonArray(key: String): JsonArray? {
+    val element = maybeGet(key)
+    return if (element != null && element.isJsonArray) element.asJsonArray else null
+}
