@@ -19,6 +19,6 @@
 package dev.deftu.disko
 
 public object DiskoConstants {
-    public const val NAME: String = "@PROJECT_NAME@"
+    public val NAME: String = "@PROJECT_NAME@".let { it.replaceFirstChar { it.uppercase() } }
     public const val VERSION: String = "@PROJECT_VERSION@"
 }
