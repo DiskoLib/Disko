@@ -20,11 +20,16 @@ package dev.deftu.disko
 
 import dev.deftu.disko.utils.parseJson
 import okhttp3.Request
+import org.slf4j.LoggerFactory
 import java.lang.IllegalStateException
 
 public class GatewayMetadata(
     private val instance: Disko
 ) {
+    private companion object {
+        private val logger = LoggerFactory.getLogger("${DiskoConstants.NAME} Gateway Metadata")
+    }
+
     private var apiVersion: ApiVersion = ApiVersion.V10
     private var url: String? = null
     private var shards: Int = 0
@@ -36,7 +41,11 @@ public class GatewayMetadata(
     public fun getApiVersion(): ApiVersion = apiVersion
 
     public fun getUrl(): String {
-        if (url == null) refresh()
+        if (url == null) {
+            logger.info("Gateway URL is currently null, refreshing gateway metadata")
+            refresh()
+        }
+
         return url!!
     }
 
@@ -45,7 +54,11 @@ public class GatewayMetadata(
     }
 
     public fun getShards(): Int {
-        if (shards == 0) refresh()
+        if (shards == 0) {
+            logger.info("Shard count is currently 0, refreshing gateway metadata")
+            refresh()
+        }
+
         return shards
     }
 
