@@ -32,6 +32,8 @@ import dev.deftu.disko.shards.ShardManager
 import dev.deftu.disko.gateway.intents.IntentManager
 import dev.deftu.disko.presence.PresenceManager
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.slf4j.LoggerFactory
 import xyz.deftu.enhancedeventbus.EventBus
 import xyz.deftu.enhancedeventbus.bus
@@ -42,6 +44,8 @@ public class Disko(
 ) {
     public companion object {
         private val logger = LoggerFactory.getLogger(DiskoConstants.NAME)
+
+        public val EMPTY_REQUEST_BODY: RequestBody = ByteArray(0).toRequestBody()
     }
 
     public val eventBus: EventBus = bus {
