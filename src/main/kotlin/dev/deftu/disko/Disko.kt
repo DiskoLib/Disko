@@ -18,12 +18,14 @@
 
 package dev.deftu.disko
 
+import dev.deftu.disko.cache.ChannelCache
 import dev.deftu.disko.cache.GuildCache
 import dev.deftu.disko.cache.MemberCache
 import dev.deftu.disko.cache.UserCache
 import dev.deftu.disko.entities.EntityConstructor
 import dev.deftu.disko.entities.DefaultEntityConstructor
 import dev.deftu.disko.entities.SelfUser
+import dev.deftu.disko.entities.channel.VoiceRegions
 import dev.deftu.disko.gateway.DiskoGateway
 import dev.deftu.disko.gateway.DefaultDiskoGateway
 import dev.deftu.disko.shards.ShardManager
@@ -61,6 +63,7 @@ public class Disko(
     public val userCache: UserCache = UserCache()
     public val guildCache: GuildCache = GuildCache()
     public val memberCache: MemberCache = MemberCache()
+    public val channelCache: ChannelCache = ChannelCache()
 
     internal var gatewayBuilder: (Disko, Int) -> DiskoGateway = { instance, shardId -> DefaultDiskoGateway(instance, shardId) }
     internal val shardManager = ShardManager(this)
