@@ -21,6 +21,7 @@ package dev.deftu.disko.gateway.packets
 import com.google.gson.JsonElement
 import dev.deftu.disko.events.GuildCreateEvent
 import dev.deftu.disko.gateway.DiskoGateway
+import dev.deftu.disko.utils.maybeGetJsonArray
 
 public class GuildCreatePacket : BaseReceivePacket {
     public companion object : PacketRegistrationData(0, "GUILD_CREATE", GuildCreatePacket::class)
@@ -33,8 +34,24 @@ public class GuildCreatePacket : BaseReceivePacket {
         if (data == null || !data.isJsonObject) return
 
         val instance = listener.instance
-        val guild = instance.entityConstructor.constructGuild(data.asJsonObject) ?: return
+        val json = data.asJsonObject
+        val guild = instance.entityConstructor.constructGuild(json) ?: return
         instance.guildCache.addGuild(guild)
+
+        val members = json.maybeGetJsonArray("members")
+        members?.forEach { rawMember ->
+            instance.entityConstructor.constructMember(rawMember.asJsonObject)?.let { member ->
+                instance.memberCache.addMember(member)
+                instance.userCache.addUser(member.user)
+            }
+        }
+
+        json.maybeGetJsonArray("channels")?.forEach { rawChannel ->
+            instance.entityConstructor.constructChannel(listener.shardId, guild, rawChannel.asJsonObject)?.let { channel ->
+                instance.channelCache.addChannel(channel)
+            }
+        }
+
         instance.eventBus.post(GuildCreateEvent(instance, listener.shardId, guild))
     }
 }
