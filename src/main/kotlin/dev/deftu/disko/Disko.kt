@@ -61,6 +61,7 @@ public class Disko(
     public lateinit var httpClient: OkHttpClient
         private set
 
+    public var entityConstructor: EntityConstructor = DefaultEntityConstructor(this)
         private set
     public var selfUser: SelfUser? = null
         internal set
