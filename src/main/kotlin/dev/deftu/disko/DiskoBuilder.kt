@@ -39,7 +39,7 @@ public class DiskoBuilder {
     }
 
     public fun build(): Disko =
-        Disko().also { applyTo(it) }
+        Disko().also(::applyTo)
 
     internal fun applyTo(instance: Disko) {
         if (httpClient != null) instance.setHttpClient(httpClient!!)
