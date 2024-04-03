@@ -18,25 +18,28 @@
 
 package dev.deftu.disko.entities.guild
 
+import dev.deftu.disko.Disko
 import dev.deftu.disko.entities.ImageFormat
 import dev.deftu.disko.entities.Locale
 import dev.deftu.disko.entities.Permission
+import dev.deftu.disko.entities.channel.Channel
+import dev.deftu.disko.entities.channel.MessageChannel
 import dev.deftu.disko.utils.Snowflake
-import java.util.Optional
 
-public class Guild(
+public open class Guild(
+    public val disko: Disko,
     public val id: Snowflake,
     public val name: String,
     public val icon: String?,
     public val splash: String?,
     public val discoverySplash: String?,
-    public val owner: Boolean,
-    public val ownerId: Snowflake,
+    public val isOwner: Boolean,
+    private val ownerId: Snowflake,
     public val permissions: List<Permission>,
-    // TODO - public val afkChannel: Channel
+    private val afkChannelId: Snowflake?,
     public val afkTimeout: Int,
-    public val widgetEnabled: Boolean,
-    // TODO - public val widgetChannel: Channel
+    public val isWidgetEnabled: Boolean,
+    public val widgetChannelId: Snowflake?,
     public val verificationLevel: VerificationLevel,
     public val defaultMessageNotifications: DefaultNotificationLevel,
     public val explicitContentFilter: ExplicitContentFilterLevel,
@@ -48,9 +51,9 @@ public class Guild(
      * The application ID of the guild creator if it is bot-created.
      */
     public val applicationId: Snowflake?,
-    // TODO - public val systemChannel: Channel
+    private val systemChannelId: Snowflake?,
     public val systemChannelFlags: List<SystemChannelFlag>,
-    // TODO - public val rulesChannel: Channel
+    private val rulesChannelId: Snowflake?,
     public val maxPresences: Int?,
     public val maxMembers: Int?,
     public val vanityUrlCode: String?,
@@ -59,18 +62,40 @@ public class Guild(
     public val premiumTier: BoostLevel,
     public val premiumSubscriptionCount: Int,
     public val preferredLocale: Locale,
-    // TODO - public val publicUpdatesChannel: Channel
+    private val publicUpdatesChannelId: Snowflake?,
     public val maxVideoChannelUsers: Int?,
     public val maxStageVideoChannelUsers: Int?,
     public val approximateMemberCount: Int,
     public val approximatePresenceCount: Int,
-    // TODO - public val welcomeScreen: WelcomeScreen
+    public val welcomeScreen: WelcomeScreen?,
     public val nsfwLevel: NsfwLevel,
     // TODO - public val stageInstances: List<StageInstance>
     // TODO - public val stickers: List<GuildSticker>
     public val premiumProgressBarEnabled: Boolean,
-    // TODO - public val safetyAlertsChannel: Channel
+    public val safetyAlertsChannelId: Snowflake?,
 ) {
+    // TODO - Voice channels
+    // public val afkChannel: Channel?
+    //     get() = afkChannelId?.let { disko.channelCache.getVoiceChannel(it) }
+    public val widgetChannel: MessageChannel?
+        get() = widgetChannelId?.let { disko.channelCache.getMessageChannel(it) }
+    public val systemChannel: MessageChannel?
+        get() = systemChannelId?.let { disko.channelCache.getMessageChannel(it) }
+    public val rulesChannel: MessageChannel?
+        get() = rulesChannelId?.let { disko.channelCache.getMessageChannel(it) }
+    public val publicUpdatesChannel: MessageChannel?
+        get() = publicUpdatesChannelId?.let { disko.channelCache.getMessageChannel(it) }
+    public val safetyAlertsChannel: MessageChannel?
+        get() = safetyAlertsChannelId?.let { disko.channelCache.getMessageChannel(it) }
+
+    // TODO - members
+
+    public var channels: List<Channel> = emptyList()
+        internal set
+    // TODO
+    // public var threads: List<ThreadChannel> = emptyList()
+    //     internal set
+
     public fun getIconUrl(): String? =
         getIconUrl(ImageFormat.PNG)
     public fun getIconUrl(format: ImageFormat): String? =
