@@ -20,7 +20,9 @@ package dev.deftu.disko.entities.channel
 
 import dev.deftu.disko.Disko
 import dev.deftu.disko.entities.message.Message
+import dev.deftu.disko.entities.message.MessageCreateBlock
 import dev.deftu.disko.utils.Snowflake
+import dev.deftu.disko.utils.parseJson
 import dev.deftu.disko.utils.scheduleAtFixedRate
 import kotlinx.coroutines.CoroutineScope
 import okhttp3.Request
@@ -82,7 +84,26 @@ public interface MessageChannel : Channel {
 
     // TODO - public fun send(builder: MessageCreateBuilder): Message
 
-    // TODO - public fun send(block: MessageCreateBlock): Message
+    public fun send(block: MessageCreateBlock.() -> Unit): Message? {
+        val messageCreateBlock = MessageCreateBlock()
+        block(messageCreateBlock)
+
+        val request = Request.Builder()
+            .url("${disko.discordBaseUrl}/channels/$id/messages")
+            .header("Authorization", "Bot ${disko.token}")
+            .post(messageCreateBlock.build().createRequestBody())
+            .build()
+        val response = disko.httpClient
+            .newCall(request)
+            .execute()
+        val body = response.body?.string() ?: return null
+        val json = body.parseJson()
+        if (!json.isJsonObject) return null
+
+        val message = disko.entityConstructor.constructMessage(json.asJsonObject) ?: return null
+        lastMessageId = message.id
+        return message
+    }
     
     public fun getMessageById(id: Snowflake): Message?
 
