@@ -91,6 +91,8 @@ public open class Guild(
 
     public val channels: List<Channel>
         get() = disko.channelCache.getChannelsInGuild(id)
+    public val messageChannels: List<GuildMessageChannel>
+        get() = channels.filterIsInstance<GuildMessageChannel>()
     // TODO
     // public var threads: List<ThreadChannel> = emptyList()
     //     internal set
