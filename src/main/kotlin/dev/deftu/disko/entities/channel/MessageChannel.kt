@@ -22,6 +22,7 @@ import dev.deftu.disko.Disko
 import dev.deftu.disko.entities.message.Message
 import dev.deftu.disko.entities.message.MessageCreateBlock
 import dev.deftu.disko.utils.Snowflake
+import dev.deftu.disko.utils.botAuth
 import dev.deftu.disko.utils.parseJson
 import dev.deftu.disko.utils.scheduleAtFixedRate
 import kotlinx.coroutines.CoroutineScope
@@ -52,7 +53,7 @@ public interface MessageChannel : Channel {
     public fun startTyping() {
         val request = Request.Builder()
             .url("${disko.discordBaseUrl}/${MessageChannel.getTypingIndicatorRoute(id)}")
-            .header("Authorization", "Bot ${disko.token}")
+            .botAuth(disko)
             .post(Disko.EMPTY_REQUEST_BODY)
             .build()
         disko.httpClient
@@ -90,7 +91,7 @@ public interface MessageChannel : Channel {
 
         val request = Request.Builder()
             .url("${disko.discordBaseUrl}/channels/$id/messages")
-            .header("Authorization", "Bot ${disko.token}")
+            .botAuth(disko)
             .post(messageCreateBlock.build().createRequestBody())
             .build()
         val response = disko.httpClient
