@@ -20,6 +20,7 @@ package dev.deftu.disko.entities.message
 
 import dev.deftu.disko.utils.Snowflake
 import java.io.File
+import java.time.Instant
 
 public class MessageCreateBlock {
     public var content: String? = null
@@ -31,7 +32,36 @@ public class MessageCreateBlock {
     private val stickers: MutableList<Snowflake> = mutableListOf()
     private val files: MutableList<File> = mutableListOf()
 
-    // TODO
+    public fun createEmbed(block: EmbedBlock.() -> Unit): MessageEmbed {
+        val builder = EmbedBlock()
+        builder.block()
+        return builder.build()
+    }
+
+    public fun embed(block: EmbedBlock.() -> Unit): () -> Unit {
+        val embed = createEmbed(block)
+        addEmbed(embed)
+
+        return {
+            removeEmbed(embed)
+        }
+    }
+
+    public fun addEmbed(embed: MessageEmbed) {
+        embeds.add(embed)
+    }
+
+    public fun removeEmbed(embed: MessageEmbed) {
+        embeds.remove(embed)
+    }
+
+    public operator fun MessageEmbed.unaryPlus() {
+        addEmbed(this)
+    }
+
+    public operator fun MessageEmbed.unaryMinus() {
+        removeEmbed(this)
+    }
 
     public fun stickers(block: StickersBlock.() -> Unit) {
         val builder = StickersBlock()
@@ -56,6 +86,168 @@ public class MessageCreateBlock {
             embeds,
             stickers,
             files
+        )
+    }
+}
+
+public class EmbedBlock {
+    public class EmbedFooterBlock {
+        public var text: String? = null
+        public var iconUrl: String? = null
+        public var proxyIconUrl: String? = null
+
+        public fun build(): MessageEmbed.MessageEmbedFooter {
+            if (text.isNullOrBlank()) throw IllegalArgumentException("Footer text cannot be null or blank")
+
+            return MessageEmbed.MessageEmbedFooter(text!!, iconUrl, proxyIconUrl)
+        }
+    }
+
+    public class EmbedImageBlock {
+        public var url: String? = null
+        public var proxyUrl: String? = null
+        public var height: Int? = null
+        public var width: Int? = null
+
+        public fun build(): MessageEmbed.MessageEmbedImage {
+            if (url.isNullOrBlank()) throw IllegalArgumentException("Image URL cannot be null or blank")
+
+            return MessageEmbed.MessageEmbedImage(url!!, proxyUrl, height, width)
+        }
+    }
+
+    public class EmbedThumbnailBlock {
+        public var url: String? = null
+        public var proxyUrl: String? = null
+        public var height: Int? = null
+        public var width: Int? = null
+
+        public fun build(): MessageEmbed.MessageEmbedThumbnail {
+            if (url.isNullOrBlank()) throw IllegalArgumentException("Thumbnail URL cannot be null or blank")
+
+            return MessageEmbed.MessageEmbedThumbnail(url!!, proxyUrl, height, width)
+        }
+    }
+
+    public class EmbedVideoBlock {
+        public var url: String? = null
+        public var height: Int? = null
+        public var width: Int? = null
+
+        public fun build(): MessageEmbed.MessageEmbedVideo {
+            if (url.isNullOrBlank()) throw IllegalArgumentException("Video URL cannot be null or blank")
+
+            return MessageEmbed.MessageEmbedVideo(url!!, height, width)
+        }
+    }
+
+    public class EmbedProviderBlock {
+        public var name: String? = null
+        public var url: String? = null
+
+        public fun build(): MessageEmbed.MessageEmbedProvider {
+            if (name.isNullOrBlank()) throw IllegalArgumentException("Provider name cannot be null or blank")
+
+            return MessageEmbed.MessageEmbedProvider(name!!, url)
+        }
+    }
+
+    public class EmbedAuthorBlock {
+        public var name: String? = null
+        public var url: String? = null
+        public var iconUrl: String? = null
+        public var proxyIconUrl: String? = null
+
+        public fun build(): MessageEmbed.MessageEmbedAuthor {
+            if (name.isNullOrBlank()) throw IllegalArgumentException("Author name cannot be null or blank")
+
+            return MessageEmbed.MessageEmbedAuthor(name!!, url, iconUrl, proxyIconUrl)
+        }
+    }
+
+    public class EmbedFieldBlock {
+        public var name: String? = null
+        public var value: String? = null
+        public var inline: Boolean = false
+
+        public fun build(): MessageEmbed.MessageEmbedField {
+            if (name.isNullOrBlank()) throw IllegalArgumentException("Field name cannot be null or blank")
+            if (value.isNullOrBlank()) throw IllegalArgumentException("Field value cannot be null or blank")
+
+            return MessageEmbed.MessageEmbedField(name!!, value!!, inline)
+        }
+    }
+
+    public var title: String? = null
+    public var description: String? = null
+    public var url: String? = null
+    public var timestamp: Instant? = null
+    public var color: Int? = null
+    public var footer: MessageEmbed.MessageEmbedFooter? = null
+    public var image: MessageEmbed.MessageEmbedImage? = null
+    public var thumbnail: MessageEmbed.MessageEmbedThumbnail? = null
+    public var video: MessageEmbed.MessageEmbedVideo? = null
+    public var provider: MessageEmbed.MessageEmbedProvider? = null
+    public var author: MessageEmbed.MessageEmbedAuthor? = null
+    public val fields: MutableList<MessageEmbed.MessageEmbedField> = mutableListOf()
+
+    public fun footer(block: EmbedFooterBlock.() -> Unit) {
+        val builder = EmbedFooterBlock()
+        builder.block()
+        footer = builder.build()
+    }
+
+    public fun image(block: EmbedImageBlock.() -> Unit) {
+        val builder = EmbedImageBlock()
+        builder.block()
+        image = builder.build()
+    }
+
+    public fun thumbnail(block: EmbedThumbnailBlock.() -> Unit) {
+        val builder = EmbedThumbnailBlock()
+        builder.block()
+        thumbnail = builder.build()
+    }
+
+    public fun video(block: EmbedVideoBlock.() -> Unit) {
+        val builder = EmbedVideoBlock()
+        builder.block()
+        video = builder.build()
+    }
+
+    public fun provider(block: EmbedProviderBlock.() -> Unit) {
+        val builder = EmbedProviderBlock()
+        builder.block()
+        provider = builder.build()
+    }
+
+    public fun author(block: EmbedAuthorBlock.() -> Unit) {
+        val builder = EmbedAuthorBlock()
+        builder.block()
+        author = builder.build()
+    }
+
+    public fun field(block: EmbedFieldBlock.() -> Unit) {
+        val builder = EmbedFieldBlock()
+        builder.block()
+        fields.add(builder.build())
+    }
+
+    public fun build(): MessageEmbed {
+        return MessageEmbed(
+            title,
+            MessageEmbed.MessageEmbedType.RICH,
+            description,
+            url,
+            timestamp,
+            color,
+            footer,
+            image,
+            thumbnail,
+            video,
+            provider,
+            author,
+            fields
         )
     }
 }
