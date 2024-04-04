@@ -43,6 +43,7 @@ public abstract class DiskoGateway(
             packetRegistry.register(InvalidSessionPacket)
             packetRegistry.register(PresenceUpdatePacket)
             packetRegistry.register(GuildCreatePacket)
+            packetRegistry.register(MessageCreatePacket)
         }
     }
 
