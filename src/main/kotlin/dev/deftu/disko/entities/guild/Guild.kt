@@ -74,9 +74,8 @@ public open class Guild(
     public val premiumProgressBarEnabled: Boolean,
     public val safetyAlertsChannelId: Snowflake?,
 ) {
-    // TODO - Voice channels
-    // public val afkChannel: Channel?
-    //     get() = afkChannelId?.let { disko.channelCache.getVoiceChannel(it) }
+    public val afkChannel: Channel?
+        get() = afkChannelId?.let { disko.channelCache.getGuildVoiceChannel(it) }
     public val widgetChannel: MessageChannel?
         get() = widgetChannelId?.let { disko.channelCache.getMessageChannel(it) }
     public val systemChannel: MessageChannel?
