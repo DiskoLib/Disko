@@ -36,7 +36,7 @@ public data class Message(
     // TODO - public val mentionRoles: List<Role>,
     public val mentionChannels: List<Channel>,
     // TODO - public val attachments: List<Attachment>,
-    // TODO - public val embeds: List<Embed>,
+    public val embeds: List<MessageEmbed>,
     // TODO - public val reactions: List<Reaction>,
     public val nonce: String?,
     public val pinned: Boolean,
