@@ -56,4 +56,9 @@ public enum class MessageType(
     STAGE_SPEAKER(29, true, ApiVersion.V9),
     STAGE_TOPIC(31, true, ApiVersion.V9),
     GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, false, ApiVersion.V9);
+
+    public companion object {
+        public fun from(value: Int): MessageType? =
+            entries.firstOrNull { it.id == value }
+    }
 }
