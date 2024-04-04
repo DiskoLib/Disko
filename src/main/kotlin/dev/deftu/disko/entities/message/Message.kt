@@ -18,14 +18,17 @@
 
 package dev.deftu.disko.entities.message
 
+import dev.deftu.disko.entities.Member
 import dev.deftu.disko.entities.User
 import dev.deftu.disko.entities.channel.Channel
+import dev.deftu.disko.entities.channel.MessageChannel
+import dev.deftu.disko.entities.guild.Guild
 import dev.deftu.disko.utils.Snowflake
 import java.time.Instant
 
 public data class Message(
     public val id: Snowflake,
-    public val channel: Channel,
+    public val channel: MessageChannel,
     public val author: User,
     public val content: String,
     public val timestamp: Instant,
@@ -51,6 +54,8 @@ public data class Message(
     // TODO - public val thread: ThreadChannel?,
     // TODO - public val components: List<Component>?,
     // TODO - public val stickerItems: List<StickerItem>?,
-    public val approximatePosition: Int?
+    public val approximatePosition: Int?,
+    public val guild: Guild?,
+    public val member: Member?
 ) {
 }
