@@ -116,7 +116,7 @@ public class Disko(
         if (!::httpClient.isInitialized) {
             logger.info("HTTP client doesn't exist yet, creating one...")
             httpClient = OkHttpClient.Builder()
-                .pingInterval(30, TimeUnit.SECONDS)
+                .pingInterval(60, TimeUnit.SECONDS)
                 .addInterceptor {
                     it.proceed(
                         it.request()
