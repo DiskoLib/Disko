@@ -36,7 +36,6 @@ public class GuildCreatePacket : BaseReceivePacket {
         val instance = listener.instance
         val json = data.asJsonObject
         val guild = instance.entityConstructor.constructGuild(json) ?: return
-        instance.guildCache.addGuild(guild)
 
         val members = json.maybeGetJsonArray("members")
         members?.forEach { rawMember ->
@@ -52,6 +51,7 @@ public class GuildCreatePacket : BaseReceivePacket {
             }
         }
 
+        instance.guildCache.addGuild(guild)
         instance.eventBus.post(GuildCreateEvent(instance, listener.shardId, guild))
     }
 }
