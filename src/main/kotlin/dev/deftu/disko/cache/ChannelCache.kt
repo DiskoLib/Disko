@@ -39,6 +39,9 @@ public class ChannelCache {
     public fun getChannelsInGuild(guildId: Snowflake): List<GuildChannel> =
         cache.values.filterIsInstance<GuildChannel>().filter { it.guild.id == guildId }
 
+    public fun getGuildVoiceChannel(id: Snowflake): GuildVoiceChannel? =
+        cache[id] as? GuildVoiceChannel
+
     public fun addChannel(channel: Channel) {
         cache[channel.id] = channel
     }
