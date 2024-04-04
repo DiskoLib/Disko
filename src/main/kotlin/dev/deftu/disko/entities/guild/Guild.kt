@@ -24,6 +24,7 @@ import dev.deftu.disko.entities.Locale
 import dev.deftu.disko.entities.Permission
 import dev.deftu.disko.entities.channel.Channel
 import dev.deftu.disko.entities.channel.MessageChannel
+import dev.deftu.disko.entities.channel.impl.GuildMessageChannel
 import dev.deftu.disko.utils.Snowflake
 
 public open class Guild(
