@@ -81,9 +81,7 @@ public class DefaultEntityConstructor(
     override fun constructMessage(json: JsonObject): Message? {
         val id = json.maybeGetSnowflake("id") ?: return null
         val channelId = json.maybeGetSnowflake("channel_id") ?: return null
-        val channel = disko.channelCache.getChannel(channelId) ?: return null
-        val guildId = json.maybeGetSnowflake("guild_id")
-        val guild = if (guildId != null) disko.guildCache.getGuild(guildId) else null
+        val channel = disko.channelCache.getMessageChannel(channelId) ?: return null
         val author = constructUser(json.maybeGetJsonObject("author") ?: return null) ?: return null
         val content = json.maybeGetString("content") ?: ""
         val timestamp = json.maybeGetString("timestamp")?.let { Instant.parse(it) } ?: return null
@@ -104,6 +102,10 @@ public class DefaultEntityConstructor(
         //val application = json.maybeGetJsonObject("application")?.let { constructMessageApplication(it) }
         //val messageReference = json.maybeGetJsonObject("message_reference")?.let { constructMessageReference(it) }
         val flags = MessageFlag.from(json.maybeGetInteger("flags") ?: 0)
+        val guildId = json.maybeGetSnowflake("guild_id")
+        val guild = if (guildId != null) disko.guildCache.getGuild(guildId) else null
+        val user = json.maybeGetJsonObject("author")?.let { constructUser(it) } // TODO - Support webhook messages
+        val member = json.maybeGetJsonObject("member")?.let { constructMember(user, it) }
 
         return Message(
             id,
@@ -133,7 +135,9 @@ public class DefaultEntityConstructor(
             //thread,
             //components,
             //stickerItems,
-            null
+            null,
+            guild,
+            member
         )
     }
 
@@ -257,8 +261,11 @@ public class DefaultEntityConstructor(
         )
     }
 
-    override fun constructMember(json: JsonObject): Member? {
-        val user = constructUser(json.maybeGetJsonObject("user") ?: return null) ?: return null
+    override fun constructMember(
+        user: User?,
+        json: JsonObject
+    ): Member? {
+        val user = user ?: constructUser(json.maybeGetJsonObject("user") ?: return null) ?: return null
         val nick = json.maybeGetString("nick")
         val avatar = json.maybeGetString("avatar")
         //val roles = json.get("roles")?.asJsonArray?.map { it.asString } ?: emptyList()

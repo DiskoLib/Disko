@@ -43,7 +43,7 @@ public interface EntityConstructor {
     public fun constructEmbedAuthor(json: JsonObject): MessageEmbed.MessageEmbedAuthor?
     public fun constructEmbedField(json: JsonObject): MessageEmbed.MessageEmbedField?
 
-    public fun constructMember(json: JsonObject): Member?
+    public fun constructMember(user: User?, json: JsonObject): Member?
 
     public fun constructGuild(json: JsonObject): Guild?
     public fun constructGuildWelcomeScreen(json: JsonObject): WelcomeScreen

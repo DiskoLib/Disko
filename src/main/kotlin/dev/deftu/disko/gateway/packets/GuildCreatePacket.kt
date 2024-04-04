@@ -39,7 +39,7 @@ public class GuildCreatePacket : BaseReceivePacket {
 
         val members = json.maybeGetJsonArray("members")
         members?.forEach { rawMember ->
-            instance.entityConstructor.constructMember(rawMember.asJsonObject)?.let { member ->
+            instance.entityConstructor.constructMember(null, rawMember.asJsonObject)?.let { member ->
                 instance.memberCache.addMember(member)
                 instance.userCache.addUser(member.user)
             }
