@@ -21,6 +21,7 @@ package dev.deftu.disko.cache
 import dev.deftu.disko.entities.channel.Channel
 import dev.deftu.disko.entities.channel.GuildChannel
 import dev.deftu.disko.entities.channel.MessageChannel
+import dev.deftu.disko.entities.channel.impl.GuildVoiceChannel
 import dev.deftu.disko.utils.Snowflake
 
 public class ChannelCache {
@@ -34,6 +35,9 @@ public class ChannelCache {
 
     public fun getGuildChannel(id: Snowflake): GuildChannel? =
         cache[id] as? GuildChannel
+
+    public fun getChannelsInGuild(guildId: Snowflake): List<GuildChannel> =
+        cache.values.filterIsInstance<GuildChannel>().filter { it.guild.id == guildId }
 
     public fun addChannel(channel: Channel) {
         cache[channel.id] = channel
