@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory
 import xyz.deftu.enhancedeventbus.EventBus
 import xyz.deftu.enhancedeventbus.bus
 import xyz.deftu.enhancedeventbus.invokers.LMFInvoker
+import java.util.concurrent.TimeUnit
 
 public class Disko(
     block: DiskoBuilder.() -> Unit = {}
@@ -115,6 +116,7 @@ public class Disko(
         if (!::httpClient.isInitialized) {
             logger.info("HTTP client doesn't exist yet, creating one...")
             httpClient = OkHttpClient.Builder()
+                .pingInterval(30, TimeUnit.SECONDS)
                 .addInterceptor {
                     it.proceed(
                         it.request()
