@@ -22,7 +22,9 @@ import dev.deftu.disko.events.GuildCreateEvent
 import dev.deftu.disko.events.ReadyEvent
 import dev.deftu.disko.gateway.intents.GatewayIntent
 import dev.deftu.disko.presence.OnlineStatus
+import dev.deftu.disko.utils.Snowflake
 import org.slf4j.LoggerFactory
+import java.io.File
 
 private val logger = LoggerFactory.getLogger("${DiskoConstants.NAME} Test Bot")
 
@@ -48,5 +50,14 @@ fun main() {
 
     disko.eventBus.on<GuildCreateEvent> { event ->
         logger.info("Joined guild ${event.guild.name} - ${event.guild.getIconUrl()}")
+        if (event.guild.id.equals(1209082161278357555L)) {
+            event.guild.systemChannel?.send {
+                content = "Hello, I am a test bot!"
+
+                files {
+                    +File("test.txt")
+                }
+            }
+        }
     }
 }
