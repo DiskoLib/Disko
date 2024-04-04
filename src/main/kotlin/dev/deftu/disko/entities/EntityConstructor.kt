@@ -26,10 +26,22 @@ import dev.deftu.disko.entities.channel.impl.*
 import dev.deftu.disko.entities.guild.Guild
 import dev.deftu.disko.entities.guild.WelcomeScreen
 import dev.deftu.disko.entities.guild.WelcomeScreenChannel
+import dev.deftu.disko.entities.message.Message
+import dev.deftu.disko.entities.message.MessageEmbed
 
 public interface EntityConstructor {
     public fun constructUser(json: JsonObject): User?
     public fun constructSelfUser(json: JsonObject): SelfUser?
+
+    public fun constructMessage(json: JsonObject): Message?
+    public fun constructMessageEmbed(json: JsonObject): MessageEmbed?
+    public fun constructEmbedFooter(json: JsonObject): MessageEmbed.MessageEmbedFooter?
+    public fun constructEmbedImage(json: JsonObject): MessageEmbed.MessageEmbedImage?
+    public fun constructEmbedThumbnail(json: JsonObject): MessageEmbed.MessageEmbedThumbnail?
+    public fun constructEmbedVideo(json: JsonObject): MessageEmbed.MessageEmbedVideo?
+    public fun constructEmbedProvider(json: JsonObject): MessageEmbed.MessageEmbedProvider?
+    public fun constructEmbedAuthor(json: JsonObject): MessageEmbed.MessageEmbedAuthor?
+    public fun constructEmbedField(json: JsonObject): MessageEmbed.MessageEmbedField?
 
     public fun constructMember(json: JsonObject): Member?
 

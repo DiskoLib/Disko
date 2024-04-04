@@ -24,6 +24,10 @@ import dev.deftu.disko.entities.channel.*
 import dev.deftu.disko.entities.channel.VoiceRegion
 import dev.deftu.disko.entities.channel.impl.*
 import dev.deftu.disko.entities.guild.*
+import dev.deftu.disko.entities.message.Message
+import dev.deftu.disko.entities.message.MessageEmbed
+import dev.deftu.disko.entities.message.MessageFlag
+import dev.deftu.disko.entities.message.MessageType
 import dev.deftu.disko.utils.*
 import java.time.Instant
 
@@ -71,6 +75,185 @@ public class DefaultEntityConstructor(
             mfaEnabled,
             locale,
             flags
+        )
+    }
+
+    override fun constructMessage(json: JsonObject): Message? {
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val channelId = json.maybeGetSnowflake("channel_id") ?: return null
+        val channel = disko.channelCache.getChannel(channelId) ?: return null
+        val guildId = json.maybeGetSnowflake("guild_id")
+        val guild = if (guildId != null) disko.guildCache.getGuild(guildId) else null
+        val author = constructUser(json.maybeGetJsonObject("author") ?: return null) ?: return null
+        val content = json.maybeGetString("content") ?: ""
+        val timestamp = json.maybeGetString("timestamp")?.let { Instant.parse(it) } ?: return null
+        val editedTimestamp = json.maybeGetString("edited_timestamp")?.let { Instant.parse(it) }
+        val tts = json.maybeGetBoolean("tts") ?: false
+        val mentionEveryone = json.maybeGetBoolean("mention_everyone") ?: false
+        val mentions = json.get("mentions")?.asJsonArray?.mapNotNull { constructUser(it.asJsonObject) } ?: emptyList()
+        //val mentionRoles = json.get("mention_roles")?.asJsonArray?.map { it.asString } ?: emptyList()
+        val mentionChannels = json.get("mention_channels")?.asJsonArray?.mapNotNull { constructChannel(0, null, it.asJsonObject) } ?: emptyList()
+        //val attachments = json.get("attachments")?.asJsonArray?.map { constructAttachment(it.asJsonObject) } ?: emptyList()
+        val embeds = json.get("embeds")?.asJsonArray?.mapNotNull { constructMessageEmbed(it.asJsonObject) } ?: emptyList()
+        //val reactions = json.get("reactions")?.asJsonArray?.map { constructReaction(it.asJsonObject) } ?: emptyList()
+        val nonce = json.maybeGetString("nonce")
+        val pinned = json.maybeGetBoolean("pinned") ?: false
+        //val webhookId = json.maybeGetSnowflake("webhook_id")
+        val type = MessageType.from(json.maybeGetInteger("type") ?: 0) ?: MessageType.DEFAULT
+        //val activity = json.maybeGetJsonObject("activity")?.let { constructMessageActivity(it) }
+        //val application = json.maybeGetJsonObject("application")?.let { constructMessageApplication(it) }
+        //val messageReference = json.maybeGetJsonObject("message_reference")?.let { constructMessageReference(it) }
+        val flags = MessageFlag.from(json.maybeGetInteger("flags") ?: 0)
+
+        return Message(
+            id,
+            channel,
+            author,
+            content,
+            timestamp,
+            editedTimestamp,
+            tts,
+            mentionEveryone,
+            mentions,
+            //mentionRoles,
+            mentionChannels,
+            //attachments,
+            embeds,
+            //reactions,
+            nonce,
+            pinned,
+            //webhookId,
+            type,
+            //activity,
+            //application,
+            //messageReference,
+            flags,
+            null,
+            //interactionMetadata,
+            //thread,
+            //components,
+            //stickerItems,
+            null
+        )
+    }
+
+    override fun constructMessageEmbed(json: JsonObject): MessageEmbed? {
+        val title = json.maybeGetString("title")
+        val type = MessageEmbed.MessageEmbedType.from(json.maybeGetString("type") ?: "rich") ?: MessageEmbed.MessageEmbedType.RICH
+        val description = json.maybeGetString("description")
+        val url = json.maybeGetString("url")
+        val timestamp = json.maybeGetString("timestamp")?.let { Instant.parse(it) }
+        val color = json.maybeGetInteger("color")
+        val footer = json.maybeGetJsonObject("footer")?.let { constructEmbedFooter(it) }
+        val image = json.maybeGetJsonObject("image")?.let { constructEmbedImage(it) }
+        val thumbnail = json.maybeGetJsonObject("thumbnail")?.let { constructEmbedThumbnail(it) }
+        val video = json.maybeGetJsonObject("video")?.let { constructEmbedVideo(it) }
+        val provider = json.maybeGetJsonObject("provider")?.let { constructEmbedProvider(it) }
+        val author = json.maybeGetJsonObject("author")?.let { constructEmbedAuthor(it) }
+        val fields = json.get("fields")?.asJsonArray?.mapNotNull { constructEmbedField(it.asJsonObject) } ?: emptyList()
+
+        return MessageEmbed(
+            title,
+            type,
+            description,
+            url,
+            timestamp,
+            color,
+            footer,
+            image,
+            thumbnail,
+            video,
+            provider,
+            author,
+            fields
+        )
+    }
+
+    override fun constructEmbedFooter(json: JsonObject): MessageEmbed.MessageEmbedFooter? {
+        val text = json.maybeGetString("text") ?: return null
+        val iconUrl = json.maybeGetString("icon_url")
+        val proxyIconUrl = json.maybeGetString("proxy_icon_url")
+
+        return MessageEmbed.MessageEmbedFooter(
+            text,
+            iconUrl,
+            proxyIconUrl
+        )
+    }
+
+    override fun constructEmbedImage(json: JsonObject): MessageEmbed.MessageEmbedImage? {
+        val url = json.maybeGetString("url") ?: return null
+        val proxyUrl = json.maybeGetString("proxy_url")
+        val height = json.maybeGetInteger("height")
+        val width = json.maybeGetInteger("width")
+
+        return MessageEmbed.MessageEmbedImage(
+            url,
+            proxyUrl,
+            height,
+            width
+        )
+    }
+
+    override fun constructEmbedThumbnail(json: JsonObject): MessageEmbed.MessageEmbedThumbnail? {
+        val url = json.maybeGetString("url") ?: return null
+        val proxyUrl = json.maybeGetString("proxy_url")
+        val height = json.maybeGetInteger("height")
+        val width = json.maybeGetInteger("width")
+
+        return MessageEmbed.MessageEmbedThumbnail(
+            url,
+            proxyUrl,
+            height,
+            width
+        )
+    }
+
+    override fun constructEmbedVideo(json: JsonObject): MessageEmbed.MessageEmbedVideo? {
+        val url = json.maybeGetString("url") ?: return null
+        val height = json.maybeGetInteger("height")
+        val width = json.maybeGetInteger("width")
+
+        return MessageEmbed.MessageEmbedVideo(
+            url,
+            height,
+            width
+        )
+    }
+
+    override fun constructEmbedProvider(json: JsonObject): MessageEmbed.MessageEmbedProvider? {
+        val name = json.maybeGetString("name") ?: return null
+        val url = json.maybeGetString("url")
+
+        return MessageEmbed.MessageEmbedProvider(
+            name,
+            url
+        )
+    }
+
+    override fun constructEmbedAuthor(json: JsonObject): MessageEmbed.MessageEmbedAuthor? {
+        val name = json.maybeGetString("name") ?: return null
+        val url = json.maybeGetString("url")
+        val iconUrl = json.maybeGetString("icon_url")
+        val proxyIconUrl = json.maybeGetString("proxy_icon_url")
+
+        return MessageEmbed.MessageEmbedAuthor(
+            name,
+            url,
+            iconUrl,
+            proxyIconUrl
+        )
+    }
+
+    override fun constructEmbedField(json: JsonObject): MessageEmbed.MessageEmbedField? {
+        val name = json.maybeGetString("name") ?: return null
+        val value = json.maybeGetString("value") ?: return null
+        val inline = json.maybeGetBoolean("inline") ?: false
+
+        return MessageEmbed.MessageEmbedField(
+            name,
+            value,
+            inline
         )
     }
 
