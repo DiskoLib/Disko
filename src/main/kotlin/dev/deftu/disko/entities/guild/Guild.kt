@@ -89,8 +89,8 @@ public open class Guild(
 
     // TODO - members
 
-    public var channels: List<Channel> = emptyList()
-        internal set
+    public val channels: List<Channel>
+        get() = disko.channelCache.getChannelsInGuild(id)
     // TODO
     // public var threads: List<ThreadChannel> = emptyList()
     //     internal set
