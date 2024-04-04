@@ -22,7 +22,7 @@ import java.time.Instant
 
 public class Member(
     public val user: User,
-    public val nick: String?,
+    public val nickname: String?,
     public val avatar: String?,
     // TODO - public val roles: List<Role>,
     public val joinedAt: Instant,
