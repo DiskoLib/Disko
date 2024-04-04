@@ -92,9 +92,9 @@ fun main() {
     
     disko.login("YOUR_BOT_TOKEN")
     
-    disko.eventBus.on<MessageCreateEvent> {
-        if (message.content == "!ping") {
-            message.reply {
+    disko.eventBus.on<MessageCreateEvent> { event ->
+        if (event.message.content == "!ping") {
+            event.message.reply {
                 content = "Pong!"
             }
         }
