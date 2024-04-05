@@ -19,12 +19,13 @@
 package dev.deftu.disko.entities.guild
 
 import dev.deftu.disko.Disko
-import dev.deftu.disko.entities.ImageFormat
-import dev.deftu.disko.entities.Locale
-import dev.deftu.disko.entities.Permission
-import dev.deftu.disko.entities.channel.Channel
-import dev.deftu.disko.entities.channel.MessageChannel
+import dev.deftu.disko.entities.*
+import dev.deftu.disko.entities.channel.Channel.Companion.asGuildMessageChannel
+import dev.deftu.disko.entities.channel.Channel.Companion.asGuildVoiceChannel
+import dev.deftu.disko.entities.channel.GuildChannel
 import dev.deftu.disko.entities.channel.impl.GuildMessageChannel
+import dev.deftu.disko.entities.channel.impl.GuildVoiceChannel
+import dev.deftu.disko.entities.guild.member.Member
 import dev.deftu.disko.utils.Snowflake
 
 public open class Guild(
@@ -75,28 +76,39 @@ public open class Guild(
     public val premiumProgressBarEnabled: Boolean,
     public val safetyAlertsChannelId: Snowflake?,
 ) {
-    public val afkChannel: Channel?
-        get() = afkChannelId?.let { disko.channelCache.getGuildVoiceChannel(it) }
-    public val widgetChannel: MessageChannel?
-        get() = widgetChannelId?.let { disko.channelCache.getMessageChannel(it) }
-    public val systemChannel: MessageChannel?
-        get() = systemChannelId?.let { disko.channelCache.getMessageChannel(it) }
-    public val rulesChannel: MessageChannel?
-        get() = rulesChannelId?.let { disko.channelCache.getMessageChannel(it) }
-    public val publicUpdatesChannel: MessageChannel?
-        get() = publicUpdatesChannelId?.let { disko.channelCache.getMessageChannel(it) }
-    public val safetyAlertsChannel: MessageChannel?
-        get() = safetyAlertsChannelId?.let { disko.channelCache.getMessageChannel(it) }
+    public val afkChannel: GuildVoiceChannel?
+        get() = afkChannelId?.let { channelId -> getChannel(channelId).asGuildVoiceChannel() }
+    public val widgetChannel: GuildMessageChannel?
+        get() = widgetChannelId?.let { channelId -> getChannel(channelId).asGuildMessageChannel() }
+    public val systemChannel: GuildMessageChannel?
+        get() = systemChannelId?.let { channelId -> getChannel(channelId).asGuildMessageChannel() }
+    public val rulesChannel: GuildMessageChannel?
+        get() = rulesChannelId?.let { channelId -> getChannel(channelId).asGuildMessageChannel() }
+    public val publicUpdatesChannel: GuildMessageChannel?
+        get() = publicUpdatesChannelId?.let { channelId -> getChannel(channelId).asGuildMessageChannel() }
+    public val safetyAlertsChannel: GuildMessageChannel?
+        get() = safetyAlertsChannelId?.let { channelId -> getChannel(channelId).asGuildMessageChannel() }
 
-    // TODO - members
+    public val members: List<Member>
+        get() = disko.memberCache.getMembersInGuild(id)
+    public val owner: Member
+        get() = disko.memberCache.getMember(ownerId)!!
 
-    public val channels: List<Channel>
+    public val channels: List<GuildChannel>
         get() = disko.channelCache.getChannelsInGuild(id)
     public val messageChannels: List<GuildMessageChannel>
         get() = channels.filterIsInstance<GuildMessageChannel>()
     // TODO
     // public var threads: List<ThreadChannel> = emptyList()
     //     internal set
+
+    public fun getMember(id: Snowflake): Member? =
+        members.firstOrNull { member -> member.id == id }
+    public fun getMember(user: User): Member? =
+        members.firstOrNull { member -> member.user == user }
+
+    public fun getChannel(id: Snowflake): GuildChannel? =
+        channels.firstOrNull { channel -> channel.id == id }
 
     public fun getIconUrl(): String? =
         getIconUrl(ImageFormat.PNG)
