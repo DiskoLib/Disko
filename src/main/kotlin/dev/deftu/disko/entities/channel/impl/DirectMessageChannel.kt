@@ -36,8 +36,8 @@ public open class DirectMessageChannel(
     override val lastPinTimestamp: Instant?,
     public val recipients: List<User>
 ) : MessageChannel {
-    override fun getMessageById(id: Snowflake): Message? {
-        TODO("Not yet implemented")
+    override fun isVisibleTo(user: User): Boolean {
+        return recipients.contains(user)
     }
 
     override fun getMessageHistory(limit: Int): List<Message> {

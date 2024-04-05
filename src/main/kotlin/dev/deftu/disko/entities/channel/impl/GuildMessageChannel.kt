@@ -19,6 +19,8 @@
 package dev.deftu.disko.entities.channel.impl
 
 import dev.deftu.disko.Disko
+import dev.deftu.disko.entities.Permission
+import dev.deftu.disko.entities.User
 import dev.deftu.disko.entities.channel.ChannelType
 import dev.deftu.disko.entities.channel.GuildChannel
 import dev.deftu.disko.entities.channel.MessageChannel
@@ -44,8 +46,8 @@ public open class GuildMessageChannel(
     override var lastMessageId: Snowflake?,
     override val lastPinTimestamp: Instant?
 ) : MessageChannel, GuildChannel {
-    override fun getMessageById(id: Snowflake): Message? {
-        TODO("Not yet implemented")
+    override fun isVisibleTo(user: User): Boolean {
+        return guild.getMember(user)?.hasPermission(Permission.VIEW_CHANNEL) ?: false
     }
 
     override fun getMessageHistory(limit: Int): List<Message> {

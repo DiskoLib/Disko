@@ -19,6 +19,8 @@
 package dev.deftu.disko.entities.channel.impl
 
 import dev.deftu.disko.Disko
+import dev.deftu.disko.entities.Permission
+import dev.deftu.disko.entities.User
 import dev.deftu.disko.entities.channel.*
 import dev.deftu.disko.entities.guild.Guild
 import dev.deftu.disko.entities.message.Message
@@ -45,8 +47,8 @@ public open class GuildVoiceChannel(
     public val region: VoiceRegion?,
     public val bitrate: Int,
 ) : GuildChannel, MessageChannel {
-    override fun getMessageById(id: Snowflake): Message? {
-        TODO("Not yet implemented")
+    override fun isVisibleTo(user: User): Boolean {
+        return guild.getMember(user)?.hasPermission(Permission.VIEW_CHANNEL) ?: false
     }
 
     override fun getMessageHistory(limit: Int): List<Message> {

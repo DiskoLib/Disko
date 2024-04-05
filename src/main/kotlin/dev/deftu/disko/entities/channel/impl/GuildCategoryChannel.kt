@@ -19,6 +19,8 @@
 package dev.deftu.disko.entities.channel.impl
 
 import dev.deftu.disko.Disko
+import dev.deftu.disko.entities.Permission
+import dev.deftu.disko.entities.User
 import dev.deftu.disko.entities.channel.ChannelType
 import dev.deftu.disko.entities.channel.GuildChannel
 import dev.deftu.disko.entities.channel.PermissionOverwrite
@@ -38,4 +40,8 @@ public class GuildCategoryChannel(
     override val rateLimitPerUser: Int,
     override val parent: GuildChannel?,
     public val name: String
-) : GuildChannel
+) : GuildChannel {
+    override fun isVisibleTo(user: User): Boolean {
+        return guild.getMember(user)?.hasPermission(Permission.VIEW_CHANNEL) ?: false
+    }
+}

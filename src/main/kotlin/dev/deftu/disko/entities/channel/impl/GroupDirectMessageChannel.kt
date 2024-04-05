@@ -22,6 +22,7 @@ import dev.deftu.disko.Disko
 import dev.deftu.disko.entities.ImageFormat
 import dev.deftu.disko.entities.User
 import dev.deftu.disko.entities.channel.ChannelType
+import dev.deftu.disko.entities.channel.OwnedChannel
 import dev.deftu.disko.entities.channel.impl.DirectMessageChannel
 import dev.deftu.disko.utils.Snowflake
 import java.time.Instant
@@ -35,8 +36,8 @@ public class GroupDirectMessageChannel(
     lastMessageId: Snowflake?,
     lastPinTimestamp: Instant?,
     recipients: List<User>,
-    public val icon: String?,
-    private val ownerId: Snowflake
+    override val owner: User,
+    public val icon: String?
 ) : DirectMessageChannel(
     disko,
     shardId,
@@ -46,10 +47,7 @@ public class GroupDirectMessageChannel(
     lastMessageId,
     lastPinTimestamp,
     recipients
-) {
-    public val owner: User
-        get() = disko.userCache.getUser(ownerId)!!
-
+), OwnedChannel {
     public fun getIconUrl(): String? =
         getIconUrl(ImageFormat.PNG)
     public fun getIconUrl(format: ImageFormat): String? =
