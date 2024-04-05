@@ -26,7 +26,7 @@ public open class User(
     public val discriminator: String,
     public val avatar: String?,
     public val isBot: Boolean,
-    public val system: Boolean,
+    public val isSystem: Boolean,
     public val mfaEnabled: Boolean,
     public val locale: Locale,
     public val publicFlags: List<UserFlag>
