@@ -18,6 +18,9 @@
 
 package dev.deftu.disko
 
+/**
+ * Enumerable values of Discord API versions that can be used
+ */
 public enum class ApiVersion(
     public val value: Int
 ) {

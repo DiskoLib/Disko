@@ -18,6 +18,7 @@
 
 package dev.deftu.disko
 
+import dev.deftu.disko.utils.botAuth
 import dev.deftu.disko.utils.parseJson
 import okhttp3.Request
 import org.slf4j.LoggerFactory
@@ -34,12 +35,28 @@ public class GatewayMetadata(
     private var gatewayUrl: String? = null
     private var shards: Int = 0
 
+    /**
+     * Sets the Discord API version to be used
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun setApiVersion(version: ApiVersion) {
         apiVersion = version
     }
 
+    /**
+     * Gets the current Discord API version being used
+     * @return [ApiVersion.value]
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun getApiVersion(): ApiVersion = apiVersion
 
+    /**
+     * Gets the Gateway URL for connecting to Discord's Gateway API
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun getGatewayUrl(): String {
         if (gatewayUrl == null) {
             logger.info("Gateway URL is currently null, refreshing gateway metadata")
@@ -49,10 +66,20 @@ public class GatewayMetadata(
         return gatewayUrl!!
     }
 
+    /**
+     * Sets the Gateway URL for connecting to Discord's Gateway API
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun setGatewayUrl(url: String) {
         this.gatewayUrl = url
     }
 
+    /**
+     * Gets the recommended Shard count from Discord's API
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun getShards(): Int {
         if (shards == 0) {
             logger.info("Shard count is currently 0, refreshing gateway metadata")
@@ -62,15 +89,25 @@ public class GatewayMetadata(
         return shards
     }
 
+    /**
+     * Sets the amount of Shards created on Discord's API
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun setShards(shards: Int) {
         this.shards = shards
     }
 
+    /**
+     * Refreshed the Shard count and the Gateway URL
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun refresh() {
         val response = instance.httpClient.newCall(
             Request.Builder()
                 .url("https://discord.com/api/v${apiVersion.value}/gateway/bot")
-                .addHeader("Authorization", "Bot ${instance.token}")
+                .botAuth(instance)
                 .build()
         ).execute()
         val body = response.body?.string() ?: throw IllegalStateException() // TODO - Don't throw an exception here
