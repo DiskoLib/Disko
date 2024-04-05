@@ -18,9 +18,12 @@
 
 package dev.deftu.disko.entities
 
+import dev.deftu.disko.entities.guild.member.Member
+import dev.deftu.disko.utils.EntityFlag
+
 public enum class Permission(
-    public val value: Int
-) {
+    override val offset: Int
+) : EntityFlag {
     CREATE_INSTANT_INVITE(0),
     KICK_MEMBERS(1),
     BAN_MEMBERS(2),
@@ -70,22 +73,21 @@ public enum class Permission(
     SEND_VOICE_MESSAGES(46),
     ;
 
-    public companion object {
-        public fun fromSingleBit(value: Int): Permission? {
-            return entries.firstOrNull { permission ->
-                value and (1 shl permission.value) != 0
-            }
-        }
+    public companion object : EntityFlag.EntityFlagCompanion<Permission> {
+        override val values: Array<Permission> = entries.toTypedArray()
 
-        public fun from(value: Int): List<Permission> {
-            val permissions = mutableListOf<Permission>()
-            entries.forEach {
-                if (value and (1 shl it.value) != 0) {
-                    permissions.add(it)
-                }
+        public fun getImplicitPermissions(member: Member): List<Permission> {
+            if (member.isOwner) return entries.toList()
+
+            var permissionBitSet = 0L
+            for (role in member.roles) {
+                permissionBitSet = permissionBitSet or Permission.toBitset(role.permissions)
+                if (Permission.isPresent(permissionBitSet, Permission.ADMINISTRATOR)) return values.toList()
             }
 
-            return permissions
+            if (member.isTimedOut)
+                permissionBitSet = permissionBitSet and (Permission.VIEW_CHANNEL.mask or Permission.READ_MESSAGE_HISTORY.mask)
+            return Permission.fromBitset(permissionBitSet)
         }
     }
 }
