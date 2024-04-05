@@ -18,7 +18,7 @@
 
 package dev.deftu.disko.entities.message
 
-import dev.deftu.disko.entities.Member
+import dev.deftu.disko.entities.guild.member.Member
 import dev.deftu.disko.entities.User
 import dev.deftu.disko.entities.channel.Channel
 import dev.deftu.disko.entities.channel.MessageChannel
