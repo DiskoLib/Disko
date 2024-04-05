@@ -19,14 +19,15 @@
 package dev.deftu.disko
 
 import dev.deftu.disko.events.GuildCreateEvent
+import dev.deftu.disko.events.MessageCreateEvent
 import dev.deftu.disko.events.ReadyEvent
 import dev.deftu.disko.gateway.intents.GatewayIntent
 import dev.deftu.disko.presence.OnlineStatus
-import dev.deftu.disko.utils.Snowflake
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
-import java.io.File
 
 private val logger = LoggerFactory.getLogger("${DiskoConstants.NAME} Test Bot")
+private val schedulerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
 fun main() {
     logger.info("Starting bot")
@@ -50,13 +51,32 @@ fun main() {
 
     disko.eventBus.on<GuildCreateEvent> { event ->
         logger.info("Joined guild ${event.guild.name} - ${event.guild.getIconUrl()}")
-        if (event.guild.id.equals(1209082161278357555L)) {
-            event.guild.systemChannel?.send {
-                content = "Hello, I am a test bot!"
+    }
 
-                files {
-                    +File("test.txt")
+    disko.eventBus.on<MessageCreateEvent> { event ->
+        if (event.message.content.startsWith("test")) {
+            if (event.author.isBot) return@on
+
+            val guild = event.guild
+            if (guild == null) {
+                event.channel.send {
+                    content = "Hello, ${event.message.author.username}! (DM)"
                 }
+
+                return@on
+            }
+
+            val member = event.member
+            if (member == null) {
+                event.channel.send {
+                    content = "Hello, ${event.message.author.username}! (Guild: ${guild.name})"
+                }
+
+                return@on
+            }
+
+            event.channel.send {
+                content = "test : Hello, ${event.author.username}! (Guild: ${guild.name}, Member: ${member.nickname ?: member.user.username})"
             }
         }
     }

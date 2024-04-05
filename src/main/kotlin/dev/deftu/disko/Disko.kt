@@ -41,7 +41,7 @@ import xyz.deftu.enhancedeventbus.invokers.LMFInvoker
 import java.util.concurrent.TimeUnit
 
 public class Disko(
-    block: DiskoBuilder.() -> Unit = {}
+    block: DiskoBlock.() -> Unit = {}
 ) {
     public companion object {
         private val logger = LoggerFactory.getLogger(DiskoConstants.NAME)
@@ -81,7 +81,7 @@ public class Disko(
     public constructor() : this({})
 
     init {
-        DiskoBuilder()
+        DiskoBlock()
             .apply(block)
             .applyTo(this)
     }
