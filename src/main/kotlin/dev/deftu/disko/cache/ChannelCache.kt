@@ -18,39 +18,44 @@
 
 package dev.deftu.disko.cache
 
+import dev.deftu.disko.entities.User
 import dev.deftu.disko.entities.channel.Channel
+import dev.deftu.disko.entities.channel.Channel.Companion.asDirectMessageChannel
+import dev.deftu.disko.entities.channel.Channel.Companion.asGuildChannel
 import dev.deftu.disko.entities.channel.GuildChannel
-import dev.deftu.disko.entities.channel.MessageChannel
-import dev.deftu.disko.entities.channel.impl.GuildVoiceChannel
 import dev.deftu.disko.utils.Snowflake
 
 public class ChannelCache {
-    private val cache: MutableMap<Snowflake, Channel> = mutableMapOf()
+    private companion object {
+        const val ID_INDEX = "id"
+        const val GUILD_INDEX = "guild"
+        const val USER_INDEX = "user"
+    }
+
+    private val cache = Cache<Channel>()
+        .createIndex(ID_INDEX) {
+            this.id
+        }.createIndex(GUILD_INDEX) {
+            this.asGuildChannel()
+                ?.guild
+                ?.id
+        }.createIndex(USER_INDEX) {
+            this.asDirectMessageChannel()
+                ?.recipients
+                ?.map(User::id)
+        }
 
     public fun getChannel(id: Snowflake): Channel? =
-        cache[id]
-
-    public fun getMessageChannel(id: Snowflake): MessageChannel? =
-        cache[id] as? MessageChannel
-
-    public fun getGuildChannel(id: Snowflake): GuildChannel? =
-        cache[id] as? GuildChannel
+        cache.findFirstByIndex(ID_INDEX, id)
 
     public fun getChannelsInGuild(guildId: Snowflake): List<GuildChannel> =
-        cache.values.filterIsInstance<GuildChannel>().filter { it.guild.id == guildId }
-
-    public fun getGuildVoiceChannel(id: Snowflake): GuildVoiceChannel? =
-        cache[id] as? GuildVoiceChannel
+        cache.findByIndex(GUILD_INDEX, guildId).map { channel -> channel.asGuildChannel()!! }
 
     public fun addChannel(channel: Channel) {
-        cache[channel.id] = channel
+        cache.add(channel)
     }
 
-    public fun removeChannel(id: Snowflake) {
-        cache.remove(id)
-    }
-
-    public fun removeChannel(id: Long) {
-        removeChannel(Snowflake(id))
+    public fun removeChannel(channel: Channel) {
+        cache.remove(channel)
     }
 }

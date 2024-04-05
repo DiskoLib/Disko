@@ -18,27 +18,37 @@
 
 package dev.deftu.disko.cache
 
-import dev.deftu.disko.entities.Member
+import dev.deftu.disko.entities.guild.member.Member
+import dev.deftu.disko.entities.guild.Guild
 import dev.deftu.disko.utils.Snowflake
 
 public class MemberCache {
-    private val cache: MutableMap<Snowflake, Member> = mutableMapOf()
+    private companion object {
+        const val ID_INDEX = "id"
+        const val GUILD_INDEX = "guild"
+    }
+
+    private val cache = Cache<Member>()
+        .createIndex(ID_INDEX) {
+            this.id
+        }.createIndex(GUILD_INDEX) {
+            this.guild.id
+        }
 
     public fun getMember(id: Snowflake): Member? =
-        cache[id]
+        cache.findFirstByIndex(ID_INDEX, id)
 
-    public fun getMember(id: Long): Member? =
-        getMember(Snowflake(id))
+    public fun getMembersInGuild(guildId: Snowflake): List<Member> =
+        cache.findByIndex(GUILD_INDEX, guildId).toList()
+
+    public fun getGuildsForMember(memberId: Snowflake): List<Guild> =
+        cache.findByIndex(ID_INDEX, memberId).map(Member::guild)
 
     public fun addMember(member: Member) {
-        cache[member.user.id] = member
+        cache.add(member)
     }
 
-    public fun removeMember(id: Snowflake) {
-        cache.remove(id)
-    }
-
-    public fun removeMember(id: Long) {
-        removeMember(Snowflake(id))
+    public fun removeMember(member: Member) {
+        cache.remove(member)
     }
 }

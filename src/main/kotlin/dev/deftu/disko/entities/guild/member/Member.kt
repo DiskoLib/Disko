@@ -16,15 +16,21 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package dev.deftu.disko.entities
+package dev.deftu.disko.entities.guild.member
 
+import dev.deftu.disko.entities.MemberFlag
+import dev.deftu.disko.entities.Permission
+import dev.deftu.disko.entities.User
+import dev.deftu.disko.entities.guild.Guild
+import dev.deftu.disko.utils.Snowflake
 import java.time.Instant
 
 public class Member(
+    public val guild: Guild,
     public val user: User,
     public val nickname: String?,
     public val avatar: String?,
-    // TODO - public val roles: List<Role>,
+    public val roles: List<Role>,
     public val joinedAt: Instant,
     public val premiumSince: Instant?,
     public val deaf: Boolean,
@@ -33,4 +39,15 @@ public class Member(
     public val pending: Boolean?,
     public val permissions: List<Permission>,
     public val communicationDisabledUntil: Instant?
-)
+) {
+    public val id: Snowflake
+        get() = user.id
+    public val isOwner: Boolean
+        get() = guild.owner == this
+    public val isTimedOut: Boolean
+        get() = communicationDisabledUntil?.isAfter(Instant.now()) ?: false
+
+    public fun hasPermission(permission: Permission): Boolean {
+        return permissions.contains(permission)
+    }
+}

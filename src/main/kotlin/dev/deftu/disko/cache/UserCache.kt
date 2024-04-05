@@ -22,23 +22,23 @@ import dev.deftu.disko.entities.User
 import dev.deftu.disko.utils.Snowflake
 
 public class UserCache {
-    private val cache: MutableMap<Snowflake, User> = mutableMapOf()
+    private companion object {
+        private const val ID_INDEX = "id"
+    }
+
+    private val cache = Cache<User>()
+        .createIndex(ID_INDEX) {
+            this.id
+        }
 
     public fun getUser(id: Snowflake): User? =
-        cache[id]
-
-    public fun getUser(id: Long): User? =
-        getUser(Snowflake(id))
+        cache.findFirstByIndex(ID_INDEX, id)
 
     public fun addUser(user: User) {
-        cache[user.id] = user
+        cache.add(user)
     }
 
-    public fun removeUser(id: Snowflake) {
-        cache.remove(id)
-    }
-
-    public fun removeUser(id: Long) {
-        removeUser(Snowflake(id))
+    public fun removeUser(user: User) {
+        cache.remove(user)
     }
 }
