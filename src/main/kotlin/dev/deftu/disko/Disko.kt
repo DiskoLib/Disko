@@ -18,10 +18,7 @@
 
 package dev.deftu.disko
 
-import dev.deftu.disko.cache.ChannelCache
-import dev.deftu.disko.cache.GuildCache
-import dev.deftu.disko.cache.MemberCache
-import dev.deftu.disko.cache.UserCache
+import dev.deftu.disko.cache.*
 import dev.deftu.disko.entities.EntityConstructor
 import dev.deftu.disko.entities.DefaultEntityConstructor
 import dev.deftu.disko.entities.SelfUser
@@ -68,6 +65,7 @@ public class Disko(
         internal set
 
     public val userCache: UserCache = UserCache()
+    public val roleCache: RoleCache = RoleCache()
     public val guildCache: GuildCache = GuildCache()
     public val memberCache: MemberCache = MemberCache()
     public val channelCache: ChannelCache = ChannelCache()
