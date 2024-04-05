@@ -19,16 +19,36 @@
 package dev.deftu.disko.entities.channel
 
 import dev.deftu.disko.Disko
+import dev.deftu.disko.entities.User
+import dev.deftu.disko.entities.channel.impl.*
 import dev.deftu.disko.utils.Snowflake
+import java.util.Optional
 
 public interface Channel {
+    public companion object {
+        public fun Channel?.asMessageChannel(): MessageChannel? = this as? MessageChannel
+        public fun Channel?.asGuildChannel(): GuildChannel? = this as? GuildChannel
+        public fun Channel?.asGuildMessageChannel(): GuildMessageChannel? = this as? GuildMessageChannel
+        public fun Channel?.asDirectMessageChannel(): DirectMessageChannel? = this as? DirectMessageChannel
+        public fun Channel?.asGuildVoiceChannel(): GuildVoiceChannel? = this as? GuildVoiceChannel
+        public fun Channel?.asGroupDirectMessageChannel(): GroupDirectMessageChannel? = this as? GroupDirectMessageChannel
+        public fun Channel?.asGuildCategoryChannel(): GuildCategoryChannel? = this as? GuildCategoryChannel
+        public fun Channel?.asGuildAnnouncementChannel(): GuildAnnouncementChannel? = this as? GuildAnnouncementChannel
+        // TODO - threads, stages, etc.
+    }
+
     public val disko: Disko
     public val shardId: Int
 
     public val id: Snowflake
     public val type: ChannelType
 
-    // TODO - Conversion functions for channel types
+    public fun maybeAsGuildMessageChannel(): Optional<GuildMessageChannel> = Optional.ofNullable(this.asGuildMessageChannel())
+    public fun maybeAsDirectMessageChannel(): Optional<DirectMessageChannel> = Optional.ofNullable(this.asDirectMessageChannel())
+    public fun maybeAsGuildVoiceChannel(): Optional<GuildVoiceChannel> = Optional.ofNullable(this.asGuildVoiceChannel())
+    public fun maybeAsGroupDirectMessageChannel(): Optional<GroupDirectMessageChannel> = Optional.ofNullable(this.asGroupDirectMessageChannel())
+    public fun maybeAsGuildCategoryChannel(): Optional<GuildCategoryChannel> = Optional.ofNullable(this.asGuildCategoryChannel())
+    public fun maybeAsGuildAnnouncementChannel(): Optional<GuildAnnouncementChannel> = Optional.ofNullable(this.asGuildAnnouncementChannel())
 
     // TODO - fun isVisibleTo(user: User): Boolean
 }
