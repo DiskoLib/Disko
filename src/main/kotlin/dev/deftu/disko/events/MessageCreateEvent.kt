@@ -19,7 +19,7 @@
 package dev.deftu.disko.events
 
 import dev.deftu.disko.Disko
-import dev.deftu.disko.entities.Member
+import dev.deftu.disko.entities.guild.member.Member
 import dev.deftu.disko.entities.User
 import dev.deftu.disko.entities.channel.MessageChannel
 import dev.deftu.disko.entities.guild.Guild
