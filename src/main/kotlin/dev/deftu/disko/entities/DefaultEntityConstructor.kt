@@ -261,6 +261,53 @@ public class DefaultEntityConstructor(
         )
     }
 
+    override fun constructRole(json: JsonObject): Role? {
+        val id = json.maybeGetSnowflake("id") ?: return null
+        val name = json.maybeGetString("name") ?: return null
+        val color = json.maybeGetInteger("color") ?: 0
+        val hoist = json.maybeGetBoolean("hoist") ?: false
+        val icon = json.maybeGetString("icon")
+        val position = json.maybeGetInteger("position") ?: 0
+        val permissions = Permission.fromBitset(json.maybeGetInteger("permissions") ?: 0)
+        val managed = json.maybeGetBoolean("managed") ?: false
+        val mentionable = json.maybeGetBoolean("mentionable") ?: false
+        val tags = json.maybeGetJsonObject("tags")?.let { constructRoleTags(it) }
+        val flags = RoleFlag.fromBitset(json.maybeGetInteger("flags") ?: 0)
+
+        return Role(
+            disko,
+            id,
+            name,
+            Color(color),
+            hoist,
+            icon,
+            position,
+            permissions,
+            managed,
+            mentionable,
+            tags,
+            flags
+        )
+    }
+
+    override fun constructRoleTags(json: JsonObject): RoleTags {
+        val botId = json.maybeGetSnowflake("bot_id")
+        val integrationId = json.maybeGetSnowflake("integration_id")
+        val premiumSubscriber = json.maybeGetBoolean("premium_subscriber") ?: false
+        val subscriptionListingId = json.maybeGetSnowflake("subscription_listing_id")
+        val availableForPurchase = json.maybeGetBoolean("available_for_purchase") ?: false
+        val linkedRole = json.maybeGetBoolean("linked_role") ?: false
+
+        return RoleTags(
+            botId,
+            integrationId,
+            premiumSubscriber,
+            subscriptionListingId,
+            availableForPurchase,
+            linkedRole
+        )
+    }
+
     override fun constructMember(
         user: User?,
         json: JsonObject
@@ -268,7 +315,6 @@ public class DefaultEntityConstructor(
         val user = user ?: constructUser(json.maybeGetJsonObject("user") ?: return null) ?: return null
         val nick = json.maybeGetString("nick")
         val avatar = json.maybeGetString("avatar")
-        //val roles = json.get("roles")?.asJsonArray?.map { it.asString } ?: emptyList()
         val joinedAt = json.maybeGetString("joined_at")?.let { Instant.parse(it) } ?: return null
         val premiumSince = json.maybeGetString("premium_since")?.let { Instant.parse(it) }
         val deaf = json.maybeGetBoolean("deaf") ?: false

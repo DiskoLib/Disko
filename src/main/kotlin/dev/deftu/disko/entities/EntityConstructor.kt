@@ -24,8 +24,11 @@ import dev.deftu.disko.entities.channel.PermissionOverwrite
 import dev.deftu.disko.entities.channel.VoiceRegion
 import dev.deftu.disko.entities.channel.impl.*
 import dev.deftu.disko.entities.guild.Guild
+import dev.deftu.disko.entities.guild.member.Member
 import dev.deftu.disko.entities.guild.WelcomeScreen
 import dev.deftu.disko.entities.guild.WelcomeScreenChannel
+import dev.deftu.disko.entities.guild.member.Role
+import dev.deftu.disko.entities.guild.member.RoleTags
 import dev.deftu.disko.entities.message.Message
 import dev.deftu.disko.entities.message.MessageEmbed
 
@@ -43,6 +46,8 @@ public interface EntityConstructor {
     public fun constructEmbedAuthor(json: JsonObject): MessageEmbed.MessageEmbedAuthor?
     public fun constructEmbedField(json: JsonObject): MessageEmbed.MessageEmbedField?
 
+    public fun constructRole(json: JsonObject): Role?
+    public fun constructRoleTags(json: JsonObject): RoleTags
     public fun constructMember(user: User?, json: JsonObject): Member?
 
     public fun constructGuild(json: JsonObject): Guild?
