@@ -21,14 +21,21 @@ package dev.deftu.disko.entities
 import com.google.gson.JsonObject
 import dev.deftu.disko.Disko
 import dev.deftu.disko.entities.channel.*
+import dev.deftu.disko.entities.channel.Channel.Companion.asGuildChannel
+import dev.deftu.disko.entities.channel.Channel.Companion.asMessageChannel
 import dev.deftu.disko.entities.channel.VoiceRegion
 import dev.deftu.disko.entities.channel.impl.*
 import dev.deftu.disko.entities.guild.*
+import dev.deftu.disko.entities.guild.member.Member
+import dev.deftu.disko.entities.guild.member.Role
+import dev.deftu.disko.entities.guild.member.RoleFlag
+import dev.deftu.disko.entities.guild.member.RoleTags
 import dev.deftu.disko.entities.message.Message
 import dev.deftu.disko.entities.message.MessageEmbed
 import dev.deftu.disko.entities.message.MessageFlag
 import dev.deftu.disko.entities.message.MessageType
 import dev.deftu.disko.utils.*
+import java.awt.Color
 import java.time.Instant
 
 public class DefaultEntityConstructor(
@@ -81,7 +88,7 @@ public class DefaultEntityConstructor(
     override fun constructMessage(json: JsonObject): Message? {
         val id = json.maybeGetSnowflake("id") ?: return null
         val channelId = json.maybeGetSnowflake("channel_id") ?: return null
-        val channel = disko.channelCache.getMessageChannel(channelId) ?: return null
+        val channel = disko.channelCache.getChannel(channelId).asMessageChannel() ?: return null
         val author = constructUser(json.maybeGetJsonObject("author") ?: return null) ?: return null
         val content = json.maybeGetString("content") ?: ""
         val timestamp = json.maybeGetString("timestamp")?.let { Instant.parse(it) } ?: return null
@@ -141,7 +148,7 @@ public class DefaultEntityConstructor(
         )
     }
 
-    override fun constructMessageEmbed(json: JsonObject): MessageEmbed? {
+    override fun constructMessageEmbed(json: JsonObject): MessageEmbed {
         val title = json.maybeGetString("title")
         val type = MessageEmbed.MessageEmbedType.from(json.maybeGetString("type") ?: "rich") ?: MessageEmbed.MessageEmbedType.RICH
         val description = json.maybeGetString("description")
@@ -315,16 +322,20 @@ public class DefaultEntityConstructor(
         val user = user ?: constructUser(json.maybeGetJsonObject("user") ?: return null) ?: return null
         val nick = json.maybeGetString("nick")
         val avatar = json.maybeGetString("avatar")
+        val roles = json.maybeGetJsonArray("roles")?.mapNotNull { disko.guildCache.getRole(it.asString) } ?: emptyList()
         val joinedAt = json.maybeGetString("joined_at")?.let { Instant.parse(it) } ?: return null
         val premiumSince = json.maybeGetString("premium_since")?.let { Instant.parse(it) }
         val deaf = json.maybeGetBoolean("deaf") ?: false
         val mute = json.maybeGetBoolean("mute") ?: false
         val pending = json.maybeGetBoolean("pending") ?: false
-        val permissions = Permission.from(json.maybeGetInteger("permissions") ?: 0)
+        val permissions = Permission.fromBitset(json.maybeGetInteger("permissions") ?: 0)
         val flags = MemberFlag.from(json.maybeGetInteger("flags") ?: 0)
         val communicationDisabledUntil = json.maybeGetString("communication_disabled_until")?.let { Instant.parse(it) }
 
+        val guild = disko.guildCache.getGuildByMember(user.id) ?: return null
+
         return Member(
+            guild,
             user,
             nick,
             avatar,
@@ -348,7 +359,7 @@ public class DefaultEntityConstructor(
         val discoverySplash = json.maybeGetString("discovery_splash")
         val isOwner = json.maybeGetBoolean("owner") ?: false
         val ownerId = json.maybeGetSnowflake("owner_id") ?: return null
-        val permissions = Permission.from(json.maybeGetInteger("permissions") ?: 0)
+        val permissions = Permission.fromBitset(json.maybeGetInteger("permissions") ?: 0)
         val afkChannelId = json.maybeGetSnowflake("afk_channel_id")
         val afkTimeout = json.maybeGetInteger("afk_timeout") ?: 0
         val widgetEnabled = json.maybeGetBoolean("widget_enabled") ?: false
@@ -511,7 +522,7 @@ public class DefaultEntityConstructor(
         val nsfw = json.maybeGetBoolean("nsfw") ?: false
         val rateLimitPerUser = json.maybeGetInteger("rate_limit_per_user") ?: 0
         val parentId = json.maybeGetSnowflake("parent_id")
-        val parent = if (parentId != null) disko.channelCache.getGuildChannel(parentId) else null
+        val parent = if (parentId != null) disko.channelCache.getChannel(parentId).asGuildChannel() else null
         val lastPinTimestamp = json.maybeGetString("last_pin_timestamp")?.let { Instant.parse(it) }
         val name = json.maybeGetString("name") ?: return null
         val lastMessageId = json.maybeGetSnowflake("last_message_id")
@@ -572,7 +583,7 @@ public class DefaultEntityConstructor(
         val nsfw = json.maybeGetBoolean("nsfw") ?: false
         val rateLimitPerUser = json.maybeGetInteger("rate_limit_per_user") ?: 0
         val parentId = json.maybeGetSnowflake("parent_id")
-        val parent = if (parentId != null) disko.channelCache.getGuildChannel(parentId) else null
+        val parent = if (parentId != null) disko.channelCache.getChannel(parentId).asGuildChannel() else null
         val name = json.maybeGetString("name") ?: return null
         val lastMessageId = json.maybeGetSnowflake("last_message_id")
         val lastPinTimestamp = json.maybeGetString("last_pin_timestamp")?.let { Instant.parse(it) }
@@ -615,6 +626,7 @@ public class DefaultEntityConstructor(
         val recipients = json.get("recipients")?.asJsonArray?.mapNotNull { constructUser(it.asJsonObject) } ?: emptyList()
         val icon = json.maybeGetString("icon")
         val ownerId = json.maybeGetSnowflake("owner_id") ?: return null
+        val owner = disko.userCache.getUser(ownerId) ?: return null
 
         return GroupDirectMessageChannel(
             disko,
@@ -625,8 +637,8 @@ public class DefaultEntityConstructor(
             lastMessageId,
             lastPinTimestamp,
             recipients,
+            owner,
             icon,
-            ownerId
         )
     }
 
@@ -644,7 +656,7 @@ public class DefaultEntityConstructor(
         val name = json.maybeGetString("name") ?: return null
         val nsfw = json.maybeGetBoolean("nsfw") ?: false
         val parentId = json.maybeGetSnowflake("parent_id")
-        val parent = if (parentId != null) disko.channelCache.getGuildChannel(parentId) else null
+        val parent = if (parentId != null) disko.channelCache.getChannel(parentId).asGuildChannel() else null
 
         return GuildCategoryChannel(
             disko,
@@ -677,7 +689,7 @@ public class DefaultEntityConstructor(
         val nsfw = json.maybeGetBoolean("nsfw") ?: false
         val rateLimitPerUser = json.maybeGetInteger("rate_limit_per_user") ?: 0
         val parentId = json.maybeGetSnowflake("parent_id")
-        val parent = if (parentId != null) disko.channelCache.getGuildChannel(parentId) else null
+        val parent = if (parentId != null) disko.channelCache.getChannel(parentId).asGuildChannel() else null
         val lastPinTimestamp = json.maybeGetString("last_pin_timestamp")?.let { Instant.parse(it) }
         val name = json.maybeGetString("name") ?: return null
         val lastMessageId = json.maybeGetSnowflake("last_message_id")
