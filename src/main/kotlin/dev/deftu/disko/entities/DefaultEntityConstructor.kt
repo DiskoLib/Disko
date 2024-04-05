@@ -463,8 +463,8 @@ public class DefaultEntityConstructor(
     override fun constructPermissionOverwrite(json: JsonObject): PermissionOverwrite? {
         val id = json.maybeGetSnowflake("id") ?: return null
         val type = PermissionOverwriteType.from(json.maybeGetString("type")) ?: return null
-        val allow = Permission.from(json.maybeGetInteger("allow") ?: 0)
-        val deny = Permission.from(json.maybeGetInteger("deny") ?: 0)
+        val allow = Permission.fromBitset(json.maybeGetInteger("allow") ?: 0)
+        val deny = Permission.fromBitset(json.maybeGetInteger("deny") ?: 0)
 
         return when (type) {
             PermissionOverwriteType.ROLE -> RolePermissionOverwrite(disko, id, allow, deny)
