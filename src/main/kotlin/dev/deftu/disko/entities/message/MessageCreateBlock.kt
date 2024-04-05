@@ -22,6 +22,16 @@ import dev.deftu.disko.utils.Snowflake
 import java.io.File
 import java.time.Instant
 
+public fun message(block: MessageCreateBlock.() -> Unit): MessageCreate =
+    MessageCreateBlock()
+        .apply(block)
+        .build()
+
+public fun embed(block: EmbedBlock.() -> Unit): MessageEmbed =
+    EmbedBlock()
+        .apply(block)
+        .build()
+
 public class MessageCreateBlock {
     public var content: String? = null
     public var nonce: String? = null
