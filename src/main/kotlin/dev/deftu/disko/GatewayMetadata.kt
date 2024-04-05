@@ -31,7 +31,7 @@ public class GatewayMetadata(
     }
 
     private var apiVersion: ApiVersion = ApiVersion.V10
-    private var url: String? = null
+    private var gatewayUrl: String? = null
     private var shards: Int = 0
 
     public fun setApiVersion(version: ApiVersion) {
@@ -40,17 +40,17 @@ public class GatewayMetadata(
 
     public fun getApiVersion(): ApiVersion = apiVersion
 
-    public fun getUrl(): String {
-        if (url == null) {
+    public fun getGatewayUrl(): String {
+        if (gatewayUrl == null) {
             logger.info("Gateway URL is currently null, refreshing gateway metadata")
             refresh()
         }
 
-        return url!!
+        return gatewayUrl!!
     }
 
-    public fun setUrl(url: String) {
-        this.url = url
+    public fun setGatewayUrl(url: String) {
+        this.gatewayUrl = url
     }
 
     public fun getShards(): Int {
@@ -82,7 +82,7 @@ public class GatewayMetadata(
             !json.asJsonObject["url"].isJsonPrimitive ||
             !json.asJsonObject["shards"].isJsonPrimitive
         ) throw IllegalStateException() // TODO - Don't throw an exception here
-        setUrl(json.asJsonObject["url"].asString)
+        setGatewayUrl(json.asJsonObject["url"].asString)
         setShards(json.asJsonObject["shards"].asInt)
     }
 }

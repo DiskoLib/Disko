@@ -70,7 +70,7 @@ public class ShardManager(
         customUrl: String? = null
     ): Shard {
         val listener = instance.gatewayBuilder(instance, shardId)
-        val shardUrl = customUrl ?: instance.gatewayMetadata.getUrl()
+        val shardUrl = customUrl ?: instance.gatewayMetadata.getGatewayUrl()
         return Shard(
             instance,
             shardId,
