@@ -322,7 +322,7 @@ public class DefaultEntityConstructor(
         val user = user ?: constructUser(json.maybeGetJsonObject("user") ?: return null) ?: return null
         val nick = json.maybeGetString("nick")
         val avatar = json.maybeGetString("avatar")
-        val roles = json.maybeGetJsonArray("roles")?.mapNotNull { disko.guildCache.getRole(it.asString) } ?: emptyList()
+        val roles = json.maybeGetJsonArray("roles")?.mapNotNull { disko.roleCache.getRole(Snowflake(it.asLong)) } ?: emptyList()
         val joinedAt = json.maybeGetString("joined_at")?.let { Instant.parse(it) } ?: return null
         val premiumSince = json.maybeGetString("premium_since")?.let { Instant.parse(it) }
         val deaf = json.maybeGetBoolean("deaf") ?: false
@@ -339,7 +339,7 @@ public class DefaultEntityConstructor(
             user,
             nick,
             avatar,
-            //roles,
+            roles,
             joinedAt,
             premiumSince,
             deaf,
