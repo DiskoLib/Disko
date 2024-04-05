@@ -1,11 +1,19 @@
+import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.base.DokkaBaseConfiguration
+import org.jetbrains.dokka.gradle.DokkaTask
+
 plugins {
     java
     kotlin("jvm") version("1.9.10")
-    val dgt = "1.23.0"
+    val dgt = "1.24.0"
     id("dev.deftu.gradle.tools") version(dgt)
+    id("dev.deftu.gradle.tools.dokka") version(dgt)
     id("dev.deftu.gradle.tools.blossom") version(dgt)
     id("dev.deftu.gradle.tools.maven-publishing") version(dgt)
 }
+
+val projectDisplayName = project.findProperty("project.displayName") as? String
+    ?: throw IllegalStateException("project.displayName is not set")
 
 dependencies {
     implementation(kotlin("reflect"))
@@ -31,4 +39,22 @@ dependencies {
 
 kotlin {
     explicitApi()
+}
+
+// Documentation
+
+tasks.withType<DokkaTask> {
+    dokkaSourceSets {
+        named("main") {
+            moduleName.set(projectDisplayName)
+            moduleVersion.set(projectData.version)
+        }
+    }
+
+    pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+        customStyleSheets = listOf(rootProject.file("dokka.css"))
+        footerMessage = "(c) 2024 Deftu and the Disko contributors"
+        separateInheritedMembers = true
+        mergeImplicitExpectActualDeclarations = true
+    }
 }
