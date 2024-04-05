@@ -50,5 +50,5 @@ public interface Channel {
     public fun maybeAsGuildCategoryChannel(): Optional<GuildCategoryChannel> = Optional.ofNullable(this.asGuildCategoryChannel())
     public fun maybeAsGuildAnnouncementChannel(): Optional<GuildAnnouncementChannel> = Optional.ofNullable(this.asGuildAnnouncementChannel())
 
-    // TODO - fun isVisibleTo(user: User): Boolean
+    public fun isVisibleTo(user: User): Boolean
 }
