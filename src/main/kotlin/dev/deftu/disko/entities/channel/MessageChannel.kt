@@ -20,6 +20,7 @@ package dev.deftu.disko.entities.channel
 
 import dev.deftu.disko.Disko
 import dev.deftu.disko.entities.message.Message
+import dev.deftu.disko.entities.message.MessageCreate
 import dev.deftu.disko.entities.message.MessageCreateBlock
 import dev.deftu.disko.utils.Snowflake
 import dev.deftu.disko.utils.botAuth
@@ -83,16 +84,11 @@ public interface MessageChannel : Channel {
         }
     }
 
-    // TODO - public fun send(builder: MessageCreateBuilder): Message
-
-    public fun send(block: MessageCreateBlock.() -> Unit): Message? {
-        val messageCreateBlock = MessageCreateBlock()
-        block(messageCreateBlock)
-
+    public fun send(data: MessageCreate): Message? {
         val request = Request.Builder()
             .url("${disko.discordBaseUrl}/channels/$id/messages")
             .botAuth(disko)
-            .post(messageCreateBlock.build().createRequestBody())
+            .post(data.createRequestBody())
             .build()
         val response = disko.httpClient
             .newCall(request)
@@ -105,8 +101,32 @@ public interface MessageChannel : Channel {
         lastMessageId = message.id
         return message
     }
+
+    // TODO - public fun send(builder: MessageCreateBuilder): Message
+
+    public fun send(block: MessageCreateBlock.() -> Unit): Message? {
+        val builder = MessageCreateBlock()
+        block(builder)
+        return send(builder.build())
+    }
     
-    public fun getMessageById(id: Snowflake): Message?
+    public fun getMessageById(id: Snowflake): Message? {
+        return if (disko.selfUser != null && isVisibleTo(disko.selfUser!!)) {
+            val request = Request.Builder()
+                .url("${disko.discordBaseUrl}/channels/$id/messages/$id")
+                .botAuth(disko)
+                .get()
+                .build()
+            val response = disko.httpClient
+                .newCall(request)
+                .execute()
+            val body = response.body?.string() ?: return null
+            val json = body.parseJson()
+            if (!json.isJsonObject) return null
+
+            disko.entityConstructor.constructMessage(json.asJsonObject)
+        } else null
+    }
 
     public fun getMessageHistory(limit: Int): List<Message>
 
