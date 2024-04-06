@@ -23,6 +23,11 @@ import dev.deftu.disko.gateway.DiskoGateway
 import dev.deftu.disko.gateway.packets.BasePacket
 import okhttp3.WebSocket
 
+/**
+ * Stores relevant metadata for Shards
+ * @since 0.1.0
+ * @author Deftu
+ */
 public data class Shard(
     val instance: Disko,
     val id: Int,
