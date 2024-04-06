@@ -50,6 +50,9 @@ public data class Activity(
     }
 }
 
+/**
+ * Enumerable class for valid Activity Types
+ */
 public enum class ActivityType {
     PLAYING,
     STREAMING,

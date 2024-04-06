@@ -18,6 +18,9 @@
 
 package dev.deftu.disko.presence
 
+/**
+ * Enumerable class for the Online Status
+ */
 public enum class OnlineStatus(
     public val status: String,
     public val description: String
