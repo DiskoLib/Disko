@@ -86,7 +86,7 @@ public enum class Permission(
             }
 
             if (member.isTimedOut)
-                permissionBitSet = permissionBitSet and (Permission.VIEW_CHANNEL.mask or Permission.READ_MESSAGE_HISTORY.mask)
+                permissionBitSet = permissionBitSet and (VIEW_CHANNEL.mask or READ_MESSAGE_HISTORY.mask)
             return Permission.fromBitset(permissionBitSet)
         }
     }
