@@ -23,6 +23,11 @@ import dev.deftu.disko.DiskoConstants
 import okhttp3.Request
 import org.slf4j.LoggerFactory
 
+/**
+ * Handles the connection state and construction of Shards
+ * @since 0.1.0
+ * @author Deftu
+ */
 public class ShardManager(
     private val instance: Disko
 ) {
@@ -32,6 +37,11 @@ public class ShardManager(
 
     private val shards = mutableListOf<Shard>()
 
+    /**
+     * Creates and connects the appropriate amount of Shards necessary
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun login() {
         val shardCount = instance.gatewayMetadata.getShards()
         logger.info("Creating $shardCount shards")
@@ -40,6 +50,11 @@ public class ShardManager(
         }
     }
 
+    /**
+     * Attempts a reconnect to a Shard after a disconnect
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun reconnectShard(shardId: Int) {
         val shard = getShard(shardId) ?: return
         shard.gateway.close(1000, "Reconnecting")
@@ -47,6 +62,11 @@ public class ShardManager(
         shards.add(constructShard(shard.totalShards, shardId))
     }
 
+    /**
+     * Resumes to a Shard after a disconnect
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun resumeShard(shardId: Int) {
         val shard = getShard(shardId) ?: return
         shard.gateway.close(1000, "Resuming")
@@ -55,13 +75,29 @@ public class ShardManager(
         // TODO - shard.send(ResumePacket())
     }
 
+    /**
+     * Performs a Unit action for each Shard
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun forEachShard(action: (Shard) -> Unit) {
         shards.forEach(action)
     }
 
+    /**
+     * Gets a specific Shard instance
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun getShard(shardId: Int): Shard? =
         shards.find { shard -> shard.id == shardId }
 
+    /**
+     * Boolean for if a Shard is connected
+     * @return [Boolean]
+     * @since 0.1.0
+     * @author Deftu
+     */
     public fun isConnected(): Boolean = shards.isNotEmpty()
 
     private fun constructShard(
