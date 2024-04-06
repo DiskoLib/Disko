@@ -26,6 +26,7 @@ import dev.deftu.disko.entities.channel.GuildChannel
 import dev.deftu.disko.entities.channel.impl.GuildMessageChannel
 import dev.deftu.disko.entities.channel.impl.GuildVoiceChannel
 import dev.deftu.disko.entities.guild.member.Member
+import dev.deftu.disko.entities.guild.member.Role
 import dev.deftu.disko.utils.Snowflake
 
 public open class Guild(
@@ -45,7 +46,7 @@ public open class Guild(
     public val verificationLevel: VerificationLevel,
     public val defaultMessageNotifications: DefaultNotificationLevel,
     public val explicitContentFilter: ExplicitContentFilterLevel,
-    // TODO - public val roles: List<Role>
+    public val roles: List<Role>,
     // TODO - public val emojis: List<Emoji>
     public val features: List<String>,
     public val mfaLevel: GuildMfaLevel,
