@@ -368,6 +368,7 @@ public class DefaultEntityConstructor(
         val verificationLevel = VerificationLevel.from(json.maybeGetInteger("verification_level") ?: 0) ?: VerificationLevel.NONE
         val defaultMessageNotifications = DefaultNotificationLevel.from(json.maybeGetInteger("default_message_notifications") ?: 0) ?: DefaultNotificationLevel.ALL_MESSAGES
         val explicitContentFilter = ExplicitContentFilterLevel.from(json.maybeGetInteger("explicit_content_filter") ?: 0) ?: ExplicitContentFilterLevel.DISABLED
+        val roles = json.maybeGetJsonArray("roles")?.mapNotNull { constructRole(it.asJsonObject) } ?: emptyList()
         val features = json.get("features")?.asJsonArray?.map { it.asString } ?: emptyList()
         val mfaLevel = GuildMfaLevel.from(json.maybeGetInteger("mfa_level") ?: 0) ?: GuildMfaLevel.NONE
         val applicationId = json.maybeGetSnowflake("application_id")
@@ -411,6 +412,7 @@ public class DefaultEntityConstructor(
             verificationLevel,
             defaultMessageNotifications,
             explicitContentFilter,
+            roles,
             features,
             mfaLevel,
             applicationId,
