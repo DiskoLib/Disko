@@ -77,6 +77,9 @@ public class Disko(
     public val presenceManager: PresenceManager = PresenceManager(this)
     public val intentManager: IntentManager = IntentManager(this)
 
+    public val shouldChunk: Boolean
+        get() = intentManager.get().contains(GatewayIntent.GUILD_MEMBERS) && isChunkingEnabled
+
     public constructor() : this({})
 
     init {
