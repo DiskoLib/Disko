@@ -24,6 +24,7 @@ import dev.deftu.disko.presence.PresenceUpdateBuilder
 import okhttp3.OkHttpClient
 
 public class DiskoBlock {
+    public var isChunkingEnabled: Boolean? = null
     public var httpClient: OkHttpClient? = null
     public var gatewayBuilder: ((Disko, Int) -> DiskoGateway)? = null
 
@@ -39,6 +40,7 @@ public class DiskoBlock {
     }
 
     internal fun applyTo(instance: Disko) {
+        if (isChunkingEnabled != null) instance.isChunkingEnabled = isChunkingEnabled!!
         if (httpClient != null) instance.setHttpClient(httpClient!!)
         if (gatewayBuilder != null) instance.setGatewayBuilder(gatewayBuilder!!)
         instance.intentManager.apply(intentsBlock)

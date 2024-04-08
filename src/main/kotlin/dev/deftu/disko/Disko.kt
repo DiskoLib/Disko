@@ -53,6 +53,7 @@ public class Disko(
 
     private var opened: Boolean = false
     internal lateinit var token: String
+    public var isChunkingEnabled: Boolean = true
     public val gatewayMetadata: GatewayMetadata = GatewayMetadata(this)
     public val baseUrl: String
         get() = "https://discord.com/api/v${gatewayMetadata.getApiVersion().value}"
