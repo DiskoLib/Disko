@@ -23,8 +23,7 @@ import dev.deftu.disko.entities.*
 import dev.deftu.disko.entities.channel.Channel.Companion.asGuildMessageChannel
 import dev.deftu.disko.entities.channel.Channel.Companion.asGuildVoiceChannel
 import dev.deftu.disko.entities.channel.GuildChannel
-import dev.deftu.disko.entities.channel.impl.GuildMessageChannel
-import dev.deftu.disko.entities.channel.impl.GuildVoiceChannel
+import dev.deftu.disko.entities.channel.impl.*
 import dev.deftu.disko.entities.guild.member.Member
 import dev.deftu.disko.entities.guild.member.Role
 import dev.deftu.disko.utils.Snowflake
@@ -97,11 +96,16 @@ public open class Guild(
 
     public val channels: List<GuildChannel>
         get() = disko.channelCache.getChannelsInGuild(id)
+    public val categoryChannels: List<GuildCategoryChannel>
+        get() = channels.filterIsInstance<GuildCategoryChannel>()
     public val messageChannels: List<GuildMessageChannel>
         get() = channels.filterIsInstance<GuildMessageChannel>()
-    // TODO
-    // public var threads: List<ThreadChannel> = emptyList()
-    //     internal set
+    public val announcementChannels: List<GuildAnnouncementChannel>
+        get() = channels.filterIsInstance<GuildAnnouncementChannel>()
+    public val voiceChannels: List<GuildVoiceChannel>
+        get() = channels.filterIsInstance<GuildVoiceChannel>()
+    public val threadChannels: List<ThreadChannel>
+        get() = channels.filterIsInstance<ThreadChannel>()
 
     public fun getMember(id: Snowflake): Member? =
         members.firstOrNull { member -> member.id == id }
