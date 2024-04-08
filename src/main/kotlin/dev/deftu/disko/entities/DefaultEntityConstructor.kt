@@ -317,6 +317,7 @@ public class DefaultEntityConstructor(
 
     override fun constructMember(
         user: User?,
+        guild: Guild?,
         json: JsonObject
     ): Member? {
         val user = user ?: constructUser(json.maybeGetJsonObject("user") ?: return null) ?: return null
@@ -332,7 +333,7 @@ public class DefaultEntityConstructor(
         val flags = MemberFlag.from(json.maybeGetInteger("flags") ?: 0)
         val communicationDisabledUntil = json.maybeGetString("communication_disabled_until")?.let { Instant.parse(it) }
 
-        val guild = disko.guildCache.getGuildByMember(user.id) ?: return null
+        val guild = guild ?: disko.guildCache.getGuildByMember(user.id) ?: return null
 
         return Member(
             guild,

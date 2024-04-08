@@ -48,7 +48,11 @@ public interface EntityConstructor {
 
     public fun constructRole(json: JsonObject): Role?
     public fun constructRoleTags(json: JsonObject): RoleTags
-    public fun constructMember(user: User?, json: JsonObject): Member?
+    public fun constructMember(
+        user: User?,
+        guild: Guild?,
+        json: JsonObject
+    ): Member?
 
     public fun constructGuild(json: JsonObject): Guild?
     public fun constructGuildWelcomeScreen(json: JsonObject): WelcomeScreen
