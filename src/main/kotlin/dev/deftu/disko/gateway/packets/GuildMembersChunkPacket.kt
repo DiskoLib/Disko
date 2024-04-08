@@ -19,11 +19,13 @@
 package dev.deftu.disko.gateway.packets
 
 import com.google.gson.JsonElement
-import dev.deftu.disko.events.MessageCreateEvent
 import dev.deftu.disko.gateway.DiskoGateway
+import dev.deftu.disko.utils.maybeGetInteger
+import dev.deftu.disko.utils.maybeGetJsonArray
+import dev.deftu.disko.utils.maybeGetSnowflake
 
-public class MessageCreatePacket : BaseReceivePacket {
-    public companion object : PacketRegistrationData(0, "MESSAGE_CREATE", MessageCreatePacket::class)
+public class GuildMembersChunkPacket : BaseReceivePacket {
+    public companion object : PacketRegistrationData(0, "GUILD_MEMBERS_CHUNK", GuildMembersChunkPacket::class)
 
     override fun handleDataReceived(
         listener: DiskoGateway,
@@ -32,16 +34,12 @@ public class MessageCreatePacket : BaseReceivePacket {
     ) {
         if (data == null || !data.isJsonObject) return
 
-        val json = data.asJsonObject
-        val message = listener.instance.entityConstructor.constructMessage(listener.shardId, json) ?: return
-        listener.instance.eventBus.post(MessageCreateEvent(
-            listener.instance,
-            listener.shardId,
-            message,
-            message.author,
-            message.member,
-            message.channel,
-            message.guild
-        ))
+        val dataObj = data.asJsonObject
+        val id = dataObj.maybeGetSnowflake("guild_id") ?: return
+        val chunkIndex = dataObj.maybeGetInteger("chunk_index") ?: return
+        val chunkCount = dataObj.maybeGetInteger("chunk_count") ?: return
+        val isLastChunk = chunkIndex == chunkCount - 1
+        val members = dataObj.maybeGetJsonArray("members") ?: return
+        listener.guildStateManager.handleChunk(id, isLastChunk, members)
     }
 }

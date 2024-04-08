@@ -19,29 +19,23 @@
 package dev.deftu.disko.gateway.packets
 
 import com.google.gson.JsonElement
-import dev.deftu.disko.events.MessageCreateEvent
 import dev.deftu.disko.gateway.DiskoGateway
+import dev.deftu.disko.utils.Snowflake
+import dev.deftu.disko.utils.add
+import dev.deftu.disko.utils.buildJsonObject
 
-public class MessageCreatePacket : BaseReceivePacket {
-    public companion object : PacketRegistrationData(0, "MESSAGE_CREATE", MessageCreatePacket::class)
+public class RequestGuildMembersPacket(
+    private val id: Snowflake
+) : BaseSendPacket {
+    public companion object : PacketRegistrationData(8, null, RequestGuildMembersPacket::class)
 
-    override fun handleDataReceived(
-        listener: DiskoGateway,
-        data: JsonElement?,
-        seq: Int
-    ) {
-        if (data == null || !data.isJsonObject) return
+    public constructor() : this(Snowflake(0))
 
-        val json = data.asJsonObject
-        val message = listener.instance.entityConstructor.constructMessage(listener.shardId, json) ?: return
-        listener.instance.eventBus.post(MessageCreateEvent(
-            listener.instance,
-            listener.shardId,
-            message,
-            message.author,
-            message.member,
-            message.channel,
-            message.guild
-        ))
+    override fun createSendJson(
+        listener: DiskoGateway
+    ): JsonElement = buildJsonObject {
+        add("guild_id", id.toString())
+        add("query", "")
+        add("limit", 0)
     }
 }

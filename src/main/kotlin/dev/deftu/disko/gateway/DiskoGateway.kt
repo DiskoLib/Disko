@@ -19,10 +19,18 @@
 package dev.deftu.disko.gateway
 
 import dev.deftu.disko.Disko
+import dev.deftu.disko.gateway.handlers.GuildStateManager
 import dev.deftu.disko.gateway.packets.*
+import dev.deftu.disko.utils.Snowflake
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import java.util.Queue
+import java.util.concurrent.LinkedBlockingQueue
 
 public abstract class DiskoGateway(
     public val instance: Disko,
@@ -34,6 +42,7 @@ public abstract class DiskoGateway(
             packetRegistry.register(IdentifyPacket)
             packetRegistry.register(ResumePacket)
             packetRegistry.register(HeartbeatPacket)
+            packetRegistry.register(RequestGuildMembersPacket)
 
             // Receive Events
             packetRegistry.register(HeartbeatAcknowledgePacket)
@@ -43,6 +52,8 @@ public abstract class DiskoGateway(
             packetRegistry.register(InvalidSessionPacket)
             packetRegistry.register(PresenceUpdatePacket)
             packetRegistry.register(GuildCreatePacket)
+            packetRegistry.register(GuildDeletePacket)
+            packetRegistry.register(GuildMembersChunkPacket)
             packetRegistry.register(MessageCreatePacket)
         }
     }
@@ -51,6 +62,10 @@ public abstract class DiskoGateway(
         protected set
     public val heart: Heart = Heart(instance, this)
     public val packetRegistry: PacketRegistry = PacketRegistry(this)
+
+    internal val guildStateManager = GuildStateManager(this)
+    private val guildChunkingScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    protected val guildChunkingQueue: Queue<Snowflake> = LinkedBlockingQueue()
 
     internal var isResuming = false
     internal var lastSeq = -1
@@ -68,8 +83,24 @@ public abstract class DiskoGateway(
     public open fun handleUnknownMessage(type: UnknownMessageType, text: String) {
     }
 
+    public open fun chunkGuild(
+        id: Snowflake,
+        sendImmediately: Boolean
+    ) {
+        if (sendImmediately) {
+            send(RequestGuildMembersPacket(id))
+        } else guildChunkingQueue.add(id)
+    }
+
     final override fun onOpen(webSocket: WebSocket, response: Response) {
         this.webSocket = webSocket
+        guildChunkingScope.launch {
+            while (true) {
+                val id = guildChunkingQueue.poll() ?: continue
+                chunkGuild(id, true)
+            }
+        }
+
         onConnected(response)
     }
 

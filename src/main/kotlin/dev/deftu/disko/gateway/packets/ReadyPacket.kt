@@ -21,6 +21,10 @@ package dev.deftu.disko.gateway.packets
 import com.google.gson.JsonElement
 import dev.deftu.disko.events.ReadyEvent
 import dev.deftu.disko.gateway.DiskoGateway
+import dev.deftu.disko.utils.maybeGetJsonArray
+import dev.deftu.disko.utils.maybeGetJsonObject
+import dev.deftu.disko.utils.maybeGetSnowflake
+import dev.deftu.disko.utils.maybeGetString
 
 public class ReadyPacket : BaseReceivePacket {
     public companion object : PacketRegistrationData(0, "READY", ReadyPacket::class)
@@ -32,21 +36,33 @@ public class ReadyPacket : BaseReceivePacket {
     ) {
         if (data == null || !data.isJsonObject) return
 
-        val sessionId = data.asJsonObject.get("session_id") ?: return
-        if (sessionId.isJsonNull) throw IllegalStateException("Session ID is null")
-        listener.sessionId = sessionId.asString
+        val dataObj = data.asJsonObject
 
-        val resumeGatewayUrl = data.asJsonObject.get("resume_gateway_url") ?: return
-        if (resumeGatewayUrl.isJsonNull) throw IllegalStateException("Resume Gateway URL is null")
-        listener.resumeGatewayUrl = resumeGatewayUrl.asString
+        val sessionId = dataObj.maybeGetString("session_id") ?: throw IllegalStateException("expected session ID in READY packet")
+        listener.sessionId = sessionId
 
-        val user = data.asJsonObject.get("user") ?: return
-        if (user.isJsonNull) throw IllegalStateException("User is null")
+        val resumeGatewayUrl = dataObj.maybeGetString("resume_gateway_url") ?: throw IllegalStateException("expected resume gateway URL in READY packet")
+        listener.resumeGatewayUrl = resumeGatewayUrl
+
+        val user = dataObj.maybeGetJsonObject("user") ?: throw IllegalStateException("expected user object in READY packet")
         val selfUser = listener.instance.entityConstructor.constructSelfUser(user.asJsonObject) ?: return
         listener.instance.selfUser = selfUser
 
-        // TODO - guilds, private channels, presences, relationships
+        val guilds = data.asJsonObject.maybeGetJsonArray("guilds") ?: throw IllegalStateException("Expected guilds array in READY packet")
+        val guildCount = guilds.size()
+        if (guildCount > 0) {
+            guilds.forEach { guild ->
+                if (!guild.isJsonObject) return@forEach
 
-        listener.instance.eventBus.post(ReadyEvent(listener.instance, listener.shardId, selfUser))
+                val obj = guild.asJsonObject
+                val id = obj.maybeGetSnowflake("id") ?: return@forEach
+                listener.guildStateManager.handleReady(id)
+            }
+        } else {
+            listener.guildStateManager.markReady()
+            listener.instance.eventBus.post(ReadyEvent(listener.instance, listener.shardId))
+        }
+
+        // TODO - private channels, presences, relationships
     }
 }

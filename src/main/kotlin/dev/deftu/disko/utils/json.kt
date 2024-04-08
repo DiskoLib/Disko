@@ -60,6 +60,10 @@ public fun buildJsonArray(init: JsonArray.() -> Unit): JsonArray {
     return array
 }
 
+public fun JsonObject.isNull(key: String): Boolean {
+    return has(key) && get(key).isJsonNull
+}
+
 public fun JsonObject.maybeGet(key: String): JsonElement? {
     return if (has(key)) get(key) else null
 }

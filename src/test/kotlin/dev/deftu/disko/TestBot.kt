@@ -18,9 +18,7 @@
 
 package dev.deftu.disko
 
-import dev.deftu.disko.events.GuildCreateEvent
-import dev.deftu.disko.events.MessageCreateEvent
-import dev.deftu.disko.events.ReadyEvent
+import dev.deftu.disko.events.*
 import dev.deftu.disko.gateway.intents.GatewayIntent
 import dev.deftu.disko.presence.OnlineStatus
 import kotlinx.coroutines.*
@@ -36,6 +34,7 @@ fun main() {
             +GatewayIntent.GUILDS
             +GatewayIntent.MESSAGE_CONTENT
             +GatewayIntent.GUILD_MESSAGES
+            +GatewayIntent.GUILD_MEMBERS
         }
 
         presence {
@@ -46,36 +45,63 @@ fun main() {
     disko.login(System.getenv("TOKEN"))
 
     disko.eventBus.on<ReadyEvent> { event ->
-        logger.info("${event.selfUser.username} is ready")
+        logger.info("${event.instance.selfUser?.username} is ready")
     }
 
-    disko.eventBus.on<GuildCreateEvent> { event ->
+    disko.eventBus.on<GuildSetupEvent> { event ->
+        logger.info("Set up guild ${event.guild.name} - ${event.guild.getIconUrl()}")
+    }
+
+    disko.eventBus.on<GuildJoinEvent> { event ->
         logger.info("Joined guild ${event.guild.name} - ${event.guild.getIconUrl()}")
+    }
+
+    disko.eventBus.on<GuildAvailableEvent> { event ->
+        logger.info("Guild ${event.guild.name} is available")
+    }
+
+    disko.eventBus.on<GuildLeaveEvent> { event ->
+        logger.info("Left guild ${event.guild.name}")
+    }
+
+    disko.eventBus.on<GuildUnavailableEvent> { event ->
+        logger.info("Guild ${event.guild.name} is unavailable")
     }
 
     disko.eventBus.on<MessageCreateEvent> { event ->
         if (event.message.content.startsWith("test")) {
             if (event.author.isBot) return@on
 
-            val guild = event.guild
-            if (guild == null) {
-                event.channel.send {
-                    content = "Hello, ${event.message.author.username}! (DM)"
-                }
-
-                return@on
-            }
-
-            val member = event.member
-            if (member == null) {
-                event.channel.send {
-                    content = "Hello, ${event.message.author.username}! (Guild: ${guild.name})"
-                }
-
-                return@on
-            }
-
             event.channel.send {
+                embed {
+                    title = "Performance Metrics"
+                    description = buildString {
+                        val totalMemory = Runtime.getRuntime().totalMemory()
+                        val freeMemory = Runtime.getRuntime().freeMemory()
+                        val usedMemory = totalMemory - freeMemory
+                        val maxMemory = Runtime.getRuntime().maxMemory()
+
+                        appendLine("Total Memory: ${totalMemory / 1024 / 1024}MB")
+                        appendLine("Free Memory: ${freeMemory / 1024 / 1024}MB")
+                        appendLine("Used Memory: ${usedMemory / 1024 / 1024}MB")
+                        appendLine("Max Memory: ${maxMemory / 1024 / 1024}MB")
+                    }
+                }
+
+                val guild = event.guild
+                if (guild == null) {
+                    content = "Hello, ${event.message.author.username}! (DM)"
+
+                    return@send
+                }
+
+                val member = event.member
+                if (member == null) {
+                    content = "Hello, ${event.message.author.username}! (Guild: ${guild.name})"
+
+                    return@send
+                }
+
                 content = "test : Hello, ${event.author.username}! (Guild: ${guild.name}, Member: ${member.nickname ?: member.user.username})"
             }
         }
