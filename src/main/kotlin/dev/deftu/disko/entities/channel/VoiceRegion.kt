@@ -35,7 +35,7 @@ public class VoiceRegions(
 
     public fun refresh() {
         val request = Request.Builder()
-            .url("${disko.discordBaseUrl}/voice/regions")
+            .url("${disko.baseUrl}/voice/regions")
             .build()
         val response = disko.httpClient.newCall(request)
             .execute()

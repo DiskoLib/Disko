@@ -54,7 +54,7 @@ public class Disko(
     private var opened: Boolean = false
     internal lateinit var token: String
     public val gatewayMetadata: GatewayMetadata = GatewayMetadata(this)
-    public val discordBaseUrl: String
+    public val baseUrl: String
         get() = "https://discord.com/api/v${gatewayMetadata.getApiVersion().value}"
     public lateinit var httpClient: OkHttpClient
         private set

@@ -53,7 +53,7 @@ public interface MessageChannel : Channel {
      */
     public fun startTyping() {
         val request = Request.Builder()
-            .url("${disko.discordBaseUrl}/${MessageChannel.getTypingIndicatorRoute(id)}")
+            .url("${disko.baseUrl}/${MessageChannel.getTypingIndicatorRoute(id)}")
             .botAuth(disko)
             .post(Disko.EMPTY_REQUEST_BODY)
             .build()
@@ -86,7 +86,7 @@ public interface MessageChannel : Channel {
 
     public fun send(data: MessageCreate): Message? {
         val request = Request.Builder()
-            .url("${disko.discordBaseUrl}/channels/$id/messages")
+            .url("${disko.baseUrl}/channels/$id/messages")
             .botAuth(disko)
             .post(data.createRequestBody())
             .build()
@@ -113,7 +113,7 @@ public interface MessageChannel : Channel {
     public fun getMessageById(id: Snowflake): Message? {
         return if (disko.selfUser != null && isVisibleTo(disko.selfUser!!)) {
             val request = Request.Builder()
-                .url("${disko.discordBaseUrl}/channels/$id/messages/$id")
+                .url("${disko.baseUrl}/channels/$id/messages/$id")
                 .botAuth(disko)
                 .get()
                 .build()
