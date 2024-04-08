@@ -68,7 +68,7 @@ public class Disko(
     public val roleCache: RoleCache = RoleCache()
     public val guildCache: GuildCache = GuildCache()
     public val memberCache: MemberCache = MemberCache()
-    public val channelCache: ChannelCache = ChannelCache()
+    public val channelCache: ChannelCache = ChannelCache(this)
 
     internal var gatewayBuilder: (Disko, Int) -> DiskoGateway = { instance, shardId -> DefaultDiskoGateway(instance, shardId) }
     internal val shardManager = ShardManager(this)

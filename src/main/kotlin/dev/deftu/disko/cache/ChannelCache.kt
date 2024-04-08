@@ -18,15 +18,26 @@
 
 package dev.deftu.disko.cache
 
+import dev.deftu.disko.Disko
+import dev.deftu.disko.DiskoConstants
 import dev.deftu.disko.entities.User
 import dev.deftu.disko.entities.channel.Channel
 import dev.deftu.disko.entities.channel.Channel.Companion.asDirectMessageChannel
 import dev.deftu.disko.entities.channel.Channel.Companion.asGuildChannel
 import dev.deftu.disko.entities.channel.GuildChannel
+import dev.deftu.disko.entities.guild.Guild
 import dev.deftu.disko.utils.Snowflake
+import dev.deftu.disko.utils.botAuth
+import dev.deftu.disko.utils.parseJson
+import okhttp3.Request
+import org.slf4j.LoggerFactory
 
-public class ChannelCache {
+public class ChannelCache(
+    private val instance: Disko
+) {
     private companion object {
+        private val logger = LoggerFactory.getLogger("${DiskoConstants.NAME} Channel Cache")
+
         const val ID_INDEX = "id"
         const val GUILD_INDEX = "guild"
         const val USER_INDEX = "user"
@@ -47,6 +58,38 @@ public class ChannelCache {
 
     public fun getChannel(id: Snowflake): Channel? =
         cache.findFirstByIndex(ID_INDEX, id)
+
+    public fun getChannelOrPopulate(
+        shardId: Int,
+        guild: Guild?,
+        id: Snowflake
+    ): Channel? {
+        val channel = getChannel(id)
+        if (channel == null) {
+            logger.debug("Channel {} not found in cache, populating from API", id)
+
+            val request = Request.Builder()
+                .url("${instance.baseUrl}/channels/$id")
+                .botAuth(instance)
+                .build()
+            val response = instance.httpClient
+                .newCall(request)
+                .execute()
+            val body = response.body?.string() ?: return null
+            val json = body.parseJson()
+            if (!json.isJsonObject) return null
+
+            val newChannel = instance.entityConstructor.constructChannel(
+                shardId,
+                guild,
+                json.asJsonObject
+            ) ?: return null
+            logger.debug("Populated channel {} from API", id)
+            addChannel(newChannel)
+        }
+
+        return getChannel(id)
+    }
 
     public fun getChannelsInGuild(guildId: Snowflake): List<GuildChannel> =
         cache.findByIndex(GUILD_INDEX, guildId).map { channel -> channel.asGuildChannel()!! }
