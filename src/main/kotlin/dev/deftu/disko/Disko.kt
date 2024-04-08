@@ -25,6 +25,7 @@ import dev.deftu.disko.entities.SelfUser
 import dev.deftu.disko.entities.channel.VoiceRegions
 import dev.deftu.disko.gateway.DiskoGateway
 import dev.deftu.disko.gateway.DefaultDiskoGateway
+import dev.deftu.disko.gateway.intents.GatewayIntent
 import dev.deftu.disko.shards.ShardManager
 import dev.deftu.disko.gateway.intents.IntentManager
 import dev.deftu.disko.presence.PresenceManager
