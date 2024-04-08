@@ -85,10 +85,10 @@ public class DefaultEntityConstructor(
         )
     }
 
-    override fun constructMessage(json: JsonObject): Message? {
+    override fun constructMessage(shardId: Int, json: JsonObject): Message? {
         val id = json.maybeGetSnowflake("id") ?: return null
         val channelId = json.maybeGetSnowflake("channel_id") ?: return null
-        val channel = disko.channelCache.getChannel(channelId).asMessageChannel() ?: return null
+        val channel = disko.channelCache.getChannelOrPopulate(shardId, null, channelId).asMessageChannel() ?: return null
         val author = constructUser(json.maybeGetJsonObject("author") ?: return null) ?: return null
         val content = json.maybeGetString("content") ?: ""
         val timestamp = json.maybeGetString("timestamp")?.let { Instant.parse(it) } ?: return null
@@ -112,7 +112,7 @@ public class DefaultEntityConstructor(
         val guildId = json.maybeGetSnowflake("guild_id")
         val guild = if (guildId != null) disko.guildCache.getGuild(guildId) else null
         val user = json.maybeGetJsonObject("author")?.let { constructUser(it) } // TODO - Support webhook messages
-        val member = json.maybeGetJsonObject("member")?.let { constructMember(user, it) }
+        val member = json.maybeGetJsonObject("member")?.let { constructMember(user, null, it) }
 
         return Message(
             id,
@@ -523,7 +523,7 @@ public class DefaultEntityConstructor(
         val nsfw = json.maybeGetBoolean("nsfw") ?: false
         val rateLimitPerUser = json.maybeGetInteger("rate_limit_per_user") ?: 0
         val parentId = json.maybeGetSnowflake("parent_id")
-        val parent = if (parentId != null) disko.channelCache.getChannel(parentId).asGuildChannel() else null
+        val parent = if (parentId != null) disko.channelCache.getChannelOrPopulate(shardId, guild, parentId).asGuildChannel() else null
         val lastPinTimestamp = json.maybeGetString("last_pin_timestamp")?.let { Instant.parse(it) }
         val name = json.maybeGetString("name") ?: return null
         val lastMessageId = json.maybeGetSnowflake("last_message_id")
@@ -584,7 +584,7 @@ public class DefaultEntityConstructor(
         val nsfw = json.maybeGetBoolean("nsfw") ?: false
         val rateLimitPerUser = json.maybeGetInteger("rate_limit_per_user") ?: 0
         val parentId = json.maybeGetSnowflake("parent_id")
-        val parent = if (parentId != null) disko.channelCache.getChannel(parentId).asGuildChannel() else null
+        val parent = if (parentId != null) disko.channelCache.getChannelOrPopulate(shardId, guild, parentId).asGuildChannel() else null
         val name = json.maybeGetString("name") ?: return null
         val lastMessageId = json.maybeGetSnowflake("last_message_id")
         val lastPinTimestamp = json.maybeGetString("last_pin_timestamp")?.let { Instant.parse(it) }
@@ -657,7 +657,7 @@ public class DefaultEntityConstructor(
         val name = json.maybeGetString("name") ?: return null
         val nsfw = json.maybeGetBoolean("nsfw") ?: false
         val parentId = json.maybeGetSnowflake("parent_id")
-        val parent = if (parentId != null) disko.channelCache.getChannel(parentId).asGuildChannel() else null
+        val parent = if (parentId != null) disko.channelCache.getChannelOrPopulate(shardId, guild, parentId).asGuildChannel() else null
 
         return GuildCategoryChannel(
             disko,
@@ -690,7 +690,7 @@ public class DefaultEntityConstructor(
         val nsfw = json.maybeGetBoolean("nsfw") ?: false
         val rateLimitPerUser = json.maybeGetInteger("rate_limit_per_user") ?: 0
         val parentId = json.maybeGetSnowflake("parent_id")
-        val parent = if (parentId != null) disko.channelCache.getChannel(parentId).asGuildChannel() else null
+        val parent = if (parentId != null) disko.channelCache.getChannelOrPopulate(shardId, guild, parentId).asGuildChannel() else null
         val lastPinTimestamp = json.maybeGetString("last_pin_timestamp")?.let { Instant.parse(it) }
         val name = json.maybeGetString("name") ?: return null
         val lastMessageId = json.maybeGetSnowflake("last_message_id")

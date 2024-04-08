@@ -36,7 +36,7 @@ public interface EntityConstructor {
     public fun constructUser(json: JsonObject): User?
     public fun constructSelfUser(json: JsonObject): SelfUser?
 
-    public fun constructMessage(json: JsonObject): Message?
+    public fun constructMessage(shardId: Int, json: JsonObject): Message?
     public fun constructMessageEmbed(json: JsonObject): MessageEmbed?
     public fun constructEmbedFooter(json: JsonObject): MessageEmbed.MessageEmbedFooter?
     public fun constructEmbedImage(json: JsonObject): MessageEmbed.MessageEmbedImage?
