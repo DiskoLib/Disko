@@ -97,7 +97,7 @@ public interface MessageChannel : Channel {
         val json = body.parseJson()
         if (!json.isJsonObject) return null
 
-        val message = disko.entityConstructor.constructMessage(json.asJsonObject) ?: return null
+        val message = disko.entityConstructor.constructMessage(shardId, json.asJsonObject) ?: return null
         lastMessageId = message.id
         return message
     }
@@ -124,7 +124,7 @@ public interface MessageChannel : Channel {
             val json = body.parseJson()
             if (!json.isJsonObject) return null
 
-            disko.entityConstructor.constructMessage(json.asJsonObject)
+            disko.entityConstructor.constructMessage(shardId, json.asJsonObject)
         } else null
     }
 
