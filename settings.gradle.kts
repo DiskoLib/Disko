@@ -16,3 +16,12 @@ pluginManagement {
 }
 
 rootProject.name = extra["project.name"]?.toString() ?: throw MissingPropertyException("The project name was not configured!")
+
+include(
+    "common",
+    "core",
+    "rest",
+    "webhook",
+    "gateway",
+    "voice"
+)
