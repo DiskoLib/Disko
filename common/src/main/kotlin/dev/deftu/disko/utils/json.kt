@@ -36,6 +36,9 @@ public fun isValidJson(json: String): Boolean {
     }
 }
 
+public val JsonElement?.isJsonObject: Boolean
+    get() = this != null && isJsonObject
+
 public fun buildJsonObject(init: JsonObject.() -> Unit): JsonObject {
     val obj = JsonObject()
     obj.init()
