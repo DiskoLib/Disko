@@ -38,7 +38,7 @@ subprojects {
 
         // Data management (Gson, EnhancedEventBus)
         implementation("com.google.code.gson:gson:${rootProject.libs.versions.gson.get()}")
-        implementation("xyz.deftu:enhancedeventbus:${rootProject.libs.versions.enhancedeventbus.get()}")
+        implementation("dev.deftu:enhancedeventbus:${rootProject.libs.versions.enhancedeventbus.get()}")
 
         // Logging (Slf4j)
         implementation("org.slf4j:slf4j-api:${rootProject.libs.versions.slf4j.get()}")
