@@ -124,7 +124,7 @@ public abstract class DiskoGateway(
     public fun registerPacket(
         op: Int,
         name: String?,
-        packet: KClass<out ReceivablePacket>
+        packet: KClass<out Packet>
     ) {
         packets[Pair(op, name)] = packet
     }
