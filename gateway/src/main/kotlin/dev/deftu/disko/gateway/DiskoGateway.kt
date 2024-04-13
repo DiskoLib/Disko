@@ -129,6 +129,23 @@ public abstract class DiskoGateway(
         packets[Pair(op, name)] = packet
     }
 
+    /**
+     * Closes the WebSocket connection to Discord's Gateway API.
+     *
+     * @param code The close code to send to Discord's Gateway API.
+     * @param reason The reason to send to Discord's Gateway API.
+     * @throws GatewayClosedException If the WebSocket connection is already closed.
+     *
+     * @since 0.1.0
+     * @author Deftu
+     */
+    public fun close(
+        code: Int,
+        reason: String
+    ) {
+        webSocket?.close(code, reason) ?: throw GatewayClosedException("Cannot close the WebSocket connection as it is already closed.")
+    }
+
     private fun handleMessage(text: String) {
         if (!isValidJson(text)) {
             onInvalidMessage(text)
