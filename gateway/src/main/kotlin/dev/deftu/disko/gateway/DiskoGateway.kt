@@ -46,6 +46,21 @@ public abstract class DiskoGateway(
     private val token: String,
     public val shardId: Int
 ) : WebSocketListener(), CoroutineScope {
+    public companion object {
+        public fun createGatewayUrl(version: ApiVersion): String =
+            "wss://gateway.discord.gg/?v=${version.value}&encoding=json"
+
+        public fun connect(
+            httpClient: OkHttpClient,
+            gateway: DiskoGateway
+        ) {
+            val request = Request.Builder()
+                .url(createGatewayUrl(ApiVersion.V9))
+                .build()
+            httpClient.newWebSocket(request, gateway)
+        }
+    }
+
     private val packets = mutableMapOf<Pair<Int, String?>, KClass<out Packet>>()
 
     /**
