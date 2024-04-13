@@ -25,9 +25,7 @@ import dev.deftu.disko.gateway.packets.ReceivablePacket
 import dev.deftu.disko.gateway.packets.SendablePacket
 import dev.deftu.disko.utils.*
 import kotlinx.coroutines.CoroutineScope
-import okhttp3.Response
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
+import okhttp3.*
 import okio.ByteString
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
@@ -62,6 +60,7 @@ public abstract class DiskoGateway(
     }
 
     private val packets = mutableMapOf<Pair<Int, String?>, KClass<out Packet>>()
+    public val heart: GatewayHeart = GatewayHeart(this)
 
     /**
      * The last sequence number received from Discord's Gateway API.
