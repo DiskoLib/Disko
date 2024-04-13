@@ -43,6 +43,7 @@ import kotlin.reflect.KClass
  */
 public abstract class DiskoGateway(
     final override val coroutineContext: CoroutineContext,
+    private val token: String,
     public val shardId: Int
 ) : WebSocketListener(), CoroutineScope {
     private val packets = mutableMapOf<Pair<Int, String?>, KClass<out Packet>>()
