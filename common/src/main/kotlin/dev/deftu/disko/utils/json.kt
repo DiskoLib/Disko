@@ -45,15 +45,15 @@ public fun buildJsonObject(init: JsonObject.() -> Unit): JsonObject {
     return obj
 }
 
-public fun JsonObject.add(key: String, value: String) {
+public fun JsonObject.add(key: String, value: String?) {
     addProperty(key, value)
 }
 
-public fun JsonObject.add(key: String, value: Number) {
+public fun JsonObject.add(key: String, value: Number?) {
     addProperty(key, value)
 }
 
-public fun JsonObject.add(key: String, value: Boolean) {
+public fun JsonObject.add(key: String, value: Boolean?) {
     addProperty(key, value)
 }
 
