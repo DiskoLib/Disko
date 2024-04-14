@@ -23,5 +23,6 @@ include(
     "rest",
     "webhook",
     "gateway",
-    "voice"
+    "voice",
+    "commands"
 )
