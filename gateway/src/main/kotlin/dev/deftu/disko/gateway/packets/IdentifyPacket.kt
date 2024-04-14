@@ -40,6 +40,7 @@ public class IdentifyPacket : SendablePacket {
 
         add("token", gateway.token)
         add("intents", GatewayIntent.toBitset(gateway.intents))
+        add("presence", gateway.identifyPresence?.toJson())
         add("large_threshold", gateway.threshold)
         add("compress", false)
     }
