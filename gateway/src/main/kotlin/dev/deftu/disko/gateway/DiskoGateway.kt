@@ -63,6 +63,10 @@ public abstract class DiskoGateway(
     }
 
     private val packets = mutableMapOf<Pair<Int, String?>, KClass<out Packet>>()
+
+    /**
+     * The object responsible for managing Discord's heartbeat/keep-alive system.
+     */
     public val heart: GatewayHeart = GatewayHeart(this)
 
     /**
