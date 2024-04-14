@@ -20,6 +20,7 @@ package dev.deftu.disko.gateway
 
 import com.google.gson.JsonObject
 import dev.deftu.disko.gateway.packets.HeartbeatPacket
+import dev.deftu.disko.gateway.packets.IdentifyPacket
 import dev.deftu.disko.utils.maybeGetLong
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -42,7 +43,8 @@ public class GatewayHeart(
 
         val jitter = (lifetimeInterval * Math.random()).roundToLong()
         logger.debug("Received hello, sending identify.")
-        // TODO - identify
+        // TODO - Check for resume
+        gateway.send(IdentifyPacket())
         logger.debug("Scheduling first heartbeat in $jitter ms.")
         scheduleBeat(jitter)
     }
