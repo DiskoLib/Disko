@@ -30,7 +30,7 @@ import kotlin.math.roundToLong
 public class GatewayHeart(
     private val gateway: DiskoGateway
 ) {
-    private val logger = LoggerFactory.getLogger("Gateway Heart ${gateway.shardId}")
+    private val logger = LoggerFactory.getLogger("Gateway Heart ${gateway.shard.id}")
     private var job: Job? = null
     private var lifetimeInterval = 0L
     private var receivedHello = false
