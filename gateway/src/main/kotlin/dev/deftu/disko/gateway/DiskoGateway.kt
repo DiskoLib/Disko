@@ -20,9 +20,7 @@ package dev.deftu.disko.gateway
 
 import dev.deftu.disko.gateway.exceptions.GatewayClosedException
 import dev.deftu.disko.gateway.exceptions.UnregisteredPacketException
-import dev.deftu.disko.gateway.packets.Packet
-import dev.deftu.disko.gateway.packets.ReceivablePacket
-import dev.deftu.disko.gateway.packets.SendablePacket
+import dev.deftu.disko.gateway.packets.*
 import dev.deftu.disko.utils.*
 import kotlinx.coroutines.CoroutineScope
 import okhttp3.*
@@ -80,6 +78,14 @@ public abstract class DiskoGateway(
      */
     public var webSocket: WebSocket? = null
         private set
+
+    init {
+        registerPacket(1, null, HeartbeatPacket::class)
+        registerPacket(2, null, IdentifyPacket::class)
+        registerPacket(3, null, PresenceUpdatePacket::class)
+        registerPacket(10, null, HelloPacket::class)
+        registerPacket(11, null, HeartbeatAckPacket::class)
+    }
 
     // Extensible Functions
 

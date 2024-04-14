@@ -18,10 +18,6 @@
 
 package dev.deftu.disko.gateway
 
-import dev.deftu.disko.gateway.packets.HeartbeatAckPacket
-import dev.deftu.disko.gateway.packets.HeartbeatPacket
-import dev.deftu.disko.gateway.packets.HelloPacket
-import dev.deftu.disko.gateway.packets.IdentifyPacket
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.slf4j.LoggerFactory
@@ -47,13 +43,6 @@ public class DefaultDiskoGateway(
         token,
         GatewayIntent.nonPrivileged
     )
-
-    init {
-        registerPacket(1, null, HeartbeatPacket::class)
-        registerPacket(2, null, IdentifyPacket::class)
-        registerPacket(10, null, HelloPacket::class)
-        registerPacket(11, null, HeartbeatAckPacket::class)
-    }
 
     override fun onRawMessage(text: String) {
         logger.debug("Received raw message: $text")
