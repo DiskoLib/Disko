@@ -21,6 +21,8 @@ package dev.deftu.disko.gateway
 import dev.deftu.disko.gateway.exceptions.GatewayClosedException
 import dev.deftu.disko.gateway.exceptions.UnregisteredPacketException
 import dev.deftu.disko.gateway.packets.*
+import dev.deftu.disko.gateway.presence.PresenceUpdate
+import dev.deftu.disko.gateway.presence.PresenceUpdateBuilder
 import dev.deftu.disko.utils.*
 import kotlinx.coroutines.CoroutineScope
 import okhttp3.*
@@ -78,6 +80,9 @@ public abstract class DiskoGateway(
      */
     public var webSocket: WebSocket? = null
         private set
+
+    private var hasIdentified = false
+    internal var identifyPresence: PresenceUpdate? = null
 
     init {
         registerPacket(1, null, HeartbeatPacket::class)
@@ -157,6 +162,21 @@ public abstract class DiskoGateway(
         packets[Pair(op, name)] = packet
     }
 
+    public fun setPresence(presence: PresenceUpdate) {
+        if (!hasIdentified) {
+            identifyPresence = presence
+            return
+        }
+
+        send(PresenceUpdatePacket(presence))
+    }
+
+    public fun setPresence(builder: PresenceUpdateBuilder.() -> Unit) {
+        setPresence(PresenceUpdateBuilder()
+            .apply(builder)
+            .build())
+    }
+
     /**
      * Closes the WebSocket connection to Discord's Gateway API.
      *
@@ -189,6 +209,9 @@ public abstract class DiskoGateway(
         val json = rawJson.asJsonObject
         val op = json.maybeGetInteger("op")
         val name = json.maybeGetString("t")
+        if (name == "READY")
+            hasIdentified = true
+
         val data = json.maybeGetJsonObject("d")
         if (op == null && name == null) {
             onInvalidPacket(text)
