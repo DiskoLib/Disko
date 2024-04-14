@@ -33,12 +33,12 @@ fun main() {
         .pingInterval(60, TimeUnit.SECONDS)
         .build()
     val gateway = DefaultDiskoGateway(System.getenv("TOKEN"))
-    gateway.setPresence(PresenceUpdate {
+    gateway.setPresence {
         status = Status.DND
         activities {
             +Activity.Playing("with Disko")
         }
-    })
+    }
 
     // TODO - Maybe add a shutdown hook to close the gateway?
     Runtime.getRuntime().addShutdownHook(Thread({
