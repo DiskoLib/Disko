@@ -26,6 +26,9 @@ import dev.deftu.disko.utils.add
 import dev.deftu.disko.utils.buildJsonArray
 import dev.deftu.disko.utils.buildJsonObject
 
+public fun PresenceUpdate(builder: PresenceUpdateBuilder.() -> Unit): PresenceUpdate =
+    PresenceUpdateBuilder().apply(builder).build()
+
 public data class PresenceUpdate(
     public val since: Long?,
     public val activities: List<Activity>,
