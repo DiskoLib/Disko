@@ -40,5 +40,12 @@ fun main() {
         }
     })
 
+    // TODO - Maybe add a shutdown hook to close the gateway?
+    Runtime.getRuntime().addShutdownHook(Thread({
+        logger.info("Shutting down Disko Test Bot...")
+        gateway.close(1000, "Shutting down")
+        logger.info("Disko Test Bot has been shut down.")
+    }, "Disko Test Bot Shutdown"))
+
     DiskoGateway.connect(httpClient, gateway)
 }
