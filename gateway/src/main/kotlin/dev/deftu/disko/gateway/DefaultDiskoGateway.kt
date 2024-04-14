@@ -26,16 +26,26 @@ import kotlinx.coroutines.SupervisorJob
 import org.slf4j.LoggerFactory
 
 public class DefaultDiskoGateway(
+    name: String,
     token: String,
-    shardId: Int
+    intents: List<GatewayIntent>,
+    threshold: Int = 250,
+    shard: Shard = Shard(0, 1) // Non-sharded bots will always have a shard ID of 0.
 ) : DiskoGateway(
     coroutineContext = Dispatchers.Default + SupervisorJob(),
+    name = name,
     token = token,
-    shardId = shardId
+    intents = intents,
+    threshold = threshold,
+    shard = shard
 ) {
     private val logger = LoggerFactory.getLogger("Default Disko Gateway")
 
-    public constructor(token: String) : this(token, 0) // Non-sharded bots will always have a shard ID of 0.
+    public constructor(token: String) : this(
+        "@PROJECT_NAME@",
+        token,
+        GatewayIntent.nonPrivileged
+    )
 
     init {
         registerPacket(1, null, HeartbeatPacket::class)

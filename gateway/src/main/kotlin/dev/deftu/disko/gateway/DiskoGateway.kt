@@ -41,8 +41,11 @@ import kotlin.reflect.KClass
  */
 public abstract class DiskoGateway(
     final override val coroutineContext: CoroutineContext,
-    private val token: String,
-    public val shardId: Int
+    public val name: String,
+    public val token: String,
+    public val intents: List<GatewayIntent>,
+    public val threshold: Int = 250,
+    public val shard: Shard = Shard(0, 1)
 ) : WebSocketListener(), CoroutineScope {
     public companion object {
         public fun createGatewayUrl(version: ApiVersion): String =
