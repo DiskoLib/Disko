@@ -48,11 +48,13 @@ public enum class GatewayIntent(
     MESSAGE_CONTENT(15, true);
 
     public companion object : BitsetFlag.BitsetFlagCompanion<GatewayIntent> {
+
         override val values: Array<GatewayIntent>
             get() = @Suppress("EnumValuesSoftDeprecate") values()
 
         public val all: List<GatewayIntent> by lazy { values.toList() }
         public val nonPrivileged: List<GatewayIntent> by lazy { values.filter { !it.isPrivileged } }
         public val privileged: List<GatewayIntent> by lazy { values.filter { it.isPrivileged } }
+
     }
 }

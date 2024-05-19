@@ -23,9 +23,11 @@ import dev.deftu.disko.gateway.DiskoGateway
 import dev.deftu.disko.utils.isJsonObject
 
 public class HelloPacket : ReceivablePacket {
+
     override fun handlePayloadReceived(gateway: DiskoGateway, data: JsonElement?) {
         if (!data.isJsonObject) return
 
         gateway.heart.hello(data!!.asJsonObject)
     }
+
 }

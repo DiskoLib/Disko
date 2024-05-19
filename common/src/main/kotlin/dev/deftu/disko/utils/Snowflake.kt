@@ -21,7 +21,9 @@ package dev.deftu.disko.utils
 import java.time.Instant
 
 public class Snowflake {
+
     public companion object {
+
         private const val DISCORD_EPOCH = 1420070400000L
 
         private const val TIMESTAMP_SHIFT = 22
@@ -37,6 +39,10 @@ public class Snowflake {
         public val validValues: LongRange = Long.MIN_VALUE..Long.MAX_VALUE
         public val minimum: Snowflake = Snowflake(validValues.first)
         public val maximum: Snowflake = Snowflake(validValues.last)
+
+        public fun Long.toSnowflake(): Snowflake =
+            Snowflake(this)
+
     }
 
     public constructor(value: Long) {
@@ -80,4 +86,5 @@ public class Snowflake {
 
     public operator fun compareTo(other: Snowflake): Int = value.compareTo(other.value)
     public operator fun compareTo(other: Long): Int = value.compareTo(other)
+
 }

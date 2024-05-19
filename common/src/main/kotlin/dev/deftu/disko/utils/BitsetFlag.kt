@@ -19,7 +19,9 @@
 package dev.deftu.disko.utils
 
 public interface BitsetFlag {
+
     public interface BitsetFlagCompanion<T : BitsetFlag> {
+
         public val values: Array<T>
 
         public fun fromBit(bit: Int): T? =
@@ -39,6 +41,7 @@ public interface BitsetFlag {
 
         public fun isPresent(bits: Long, item: T): Boolean =
             bits and item.mask != 0L
+
     }
 
     public val offset: Int
@@ -48,4 +51,5 @@ public interface BitsetFlag {
 
     public fun isSet(flags: Long): Boolean =
         flags and mask != 0L
+
 }

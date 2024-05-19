@@ -26,6 +26,7 @@ import dev.deftu.disko.utils.buildJsonArray
 import dev.deftu.disko.utils.buildJsonObject
 
 public class IdentifyPacket : SendablePacket {
+
     override fun createSendPayload(gateway: DiskoGateway): JsonObject = buildJsonObject {
         add("properties", buildJsonObject {
             add("os", System.getProperty("os.name"))
@@ -44,4 +45,5 @@ public class IdentifyPacket : SendablePacket {
         add("large_threshold", gateway.threshold)
         add("compress", false)
     }
+
 }

@@ -21,5 +21,7 @@ package dev.deftu.disko.utils
 import com.google.gson.JsonElement
 
 public interface DataObject {
+
     public fun toJson(): JsonElement
+
 }

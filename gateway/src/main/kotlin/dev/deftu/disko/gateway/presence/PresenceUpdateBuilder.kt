@@ -18,7 +18,6 @@
 
 package dev.deftu.disko.gateway.presence
 
-import dev.deftu.disko.presence.Activity
 import dev.deftu.disko.presence.Status
 
 public class PresenceUpdateBuilder {
