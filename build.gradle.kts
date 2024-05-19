@@ -5,7 +5,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 plugins {
     java
     kotlin("jvm") version("1.9.10")
-    val dgt = "1.24.0"
+    val dgt = "1.26.0"
     id("dev.deftu.gradle.tools") version(dgt)
     id("dev.deftu.gradle.tools.dokka") version(dgt)
     id("dev.deftu.gradle.tools.blossom") version(dgt)
