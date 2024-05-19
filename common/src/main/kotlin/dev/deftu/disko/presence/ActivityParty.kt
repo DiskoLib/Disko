@@ -18,40 +18,14 @@
 
 package dev.deftu.disko.presence
 
-/**
- * Enumerable value for all possible types of activities supported within Discord.
- *
- * @since 0.1.0
- * @author Deftu
- */
-public enum class ActivityType {
-    /**
-     * The user is playing a game.
-     */
-    PLAYING,
+public data class ActivityParty(
+    public val id: String,
+    public val size: PartySize
+) {
 
-    /**
-     * The user is streaming to either YouTube or Twitch - May be a custom URL for bots.
-     */
-    STREAMING,
+    public data class PartySize(
+        public val currentSize: Int,
+        public val maxSize: Int
+    )
 
-    /**
-     * The user is listening to something.
-     */
-    LISTENING,
-
-    /**
-     * The user is watching something.
-     */
-    WATCHING,
-
-    /**
-     * The user has a custom status.
-     */
-    CUSTOM,
-
-    /**
-     * The user is competing in a game.
-     */
-    COMPETING,
 }

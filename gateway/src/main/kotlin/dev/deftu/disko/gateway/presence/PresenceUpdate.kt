@@ -19,7 +19,6 @@
 package dev.deftu.disko.gateway.presence
 
 import com.google.gson.JsonObject
-import dev.deftu.disko.presence.Activity
 import dev.deftu.disko.presence.Status
 import dev.deftu.disko.utils.DataObject
 import dev.deftu.disko.utils.add

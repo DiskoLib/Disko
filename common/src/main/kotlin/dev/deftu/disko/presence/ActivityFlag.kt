@@ -18,40 +18,24 @@
 
 package dev.deftu.disko.presence
 
-/**
- * Enumerable value for all possible types of activities supported within Discord.
- *
- * @since 0.1.0
- * @author Deftu
- */
-public enum class ActivityType {
-    /**
-     * The user is playing a game.
-     */
-    PLAYING,
+import dev.deftu.disko.utils.BitsetFlag
 
-    /**
-     * The user is streaming to either YouTube or Twitch - May be a custom URL for bots.
-     */
-    STREAMING,
+public enum class ActivityFlag(override val offset: Int) : BitsetFlag {
+    INSTANCE(0),
+    JOIN(1),
+    SPECTATE(2),
+    JOIN_REQUEST(3),
+    SYNC(4),
+    PLAY(5),
+    PARTY_PRIVACY_FRIENDS(6),
+    PARTY_PRIVACY_VOICE_CHANNEL(7),
+    EMBEDDED(8);
 
-    /**
-     * The user is listening to something.
-     */
-    LISTENING,
+    public companion object : BitsetFlag.BitsetFlagCompanion<ActivityFlag> {
 
-    /**
-     * The user is watching something.
-     */
-    WATCHING,
+        override val values: Array<ActivityFlag>
+            get() = @Suppress("EnumValuesSoftDeprecate") values()
 
-    /**
-     * The user has a custom status.
-     */
-    CUSTOM,
+    }
 
-    /**
-     * The user is competing in a game.
-     */
-    COMPETING,
 }

@@ -18,40 +18,31 @@
 
 package dev.deftu.disko.presence
 
-/**
- * Enumerable value for all possible types of activities supported within Discord.
- *
- * @since 0.1.0
- * @author Deftu
- */
-public enum class ActivityType {
-    /**
-     * The user is playing a game.
-     */
-    PLAYING,
+import com.google.gson.JsonObject
+import dev.deftu.disko.utils.DataObject
+import dev.deftu.disko.utils.add
+import dev.deftu.disko.utils.buildJsonObject
 
-    /**
-     * The user is streaming to either YouTube or Twitch - May be a custom URL for bots.
-     */
-    STREAMING,
+public data class ActivityAssets(
+    public val large: Asset? = null,
+    public val small: Asset? = null,
+) : DataObject {
 
-    /**
-     * The user is listening to something.
-     */
-    LISTENING,
+    public data class Asset(
+        public val image: String?,
+        public val text: String?
+    )
 
-    /**
-     * The user is watching something.
-     */
-    WATCHING,
+    override fun toJson(): JsonObject = buildJsonObject {
+        large?.let { large ->
+            add("large_image", large.image)
+            add("large_text", large.text)
+        }
 
-    /**
-     * The user has a custom status.
-     */
-    CUSTOM,
+        small?.let { small ->
+            add("small_image", small.image)
+            add("small_text", small.text)
+        }
+    }
 
-    /**
-     * The user is competing in a game.
-     */
-    COMPETING,
 }
