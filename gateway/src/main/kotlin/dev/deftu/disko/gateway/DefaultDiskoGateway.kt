@@ -18,6 +18,7 @@
 
 package dev.deftu.disko.gateway
 
+import dev.deftu.disko.gateway.packets.Packet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.slf4j.LoggerFactory
@@ -36,23 +37,15 @@ public class DefaultDiskoGateway(
     threshold = threshold,
     shard = shard
 ) {
+
     private val logger = LoggerFactory.getLogger("Default Disko Gateway")
-
-    public constructor(token: String) : this(
-        "@PROJECT_NAME@",
-        token,
-        GatewayIntent.nonPrivileged
-    )
-
-    override fun onRawMessage(text: String) {
-        logger.debug("Received raw message: $text")
-    }
 
     override fun onInvalidMessage(text: String) {
         logger.error("Received invalid message: $text")
     }
 
-    override fun onInvalidPacket(text: String) {
-        logger.error("Received invalid packet: $text")
+    override fun onInvalidPacket(text: String, packet: Class<out Packet>?, type: InvalidPacketType) {
+        logger.error("Received invalid packet: $type, $packet, $text")
     }
+
 }
