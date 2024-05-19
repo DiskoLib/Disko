@@ -28,7 +28,6 @@ import kotlinx.coroutines.CoroutineScope
 import okhttp3.*
 import okio.ByteString
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.KClass
 
 /**
  * Represents the low-level logical gateway for the WebSocket connection to Discord's Gateway API.
@@ -47,10 +46,14 @@ public abstract class DiskoGateway(
     public val threshold: Int = 250,
     public val shard: Shard = Shard(0, 1)
 ) : WebSocketListener(), CoroutineScope {
+
     public companion object {
+
+        @JvmStatic
         public fun createGatewayUrl(version: ApiVersion): String =
             "wss://gateway.discord.gg/?v=${version.value}&encoding=json"
 
+        @JvmStatic
         public fun connect(
             httpClient: OkHttpClient,
             gateway: DiskoGateway
@@ -60,9 +63,10 @@ public abstract class DiskoGateway(
                 .build()
             httpClient.newWebSocket(request, gateway)
         }
+
     }
 
-    private val packets = mutableMapOf<Pair<Int, String?>, KClass<out Packet>>()
+    private val packets = mutableMapOf<Pair<Int, String?>, Class<out Packet>>()
 
     /**
      * The object responsible for managing Discord's heartbeat/keep-alive system.
@@ -85,11 +89,11 @@ public abstract class DiskoGateway(
     internal var identifyPresence: PresenceUpdate? = null
 
     init {
-        registerPacket(1, null, HeartbeatPacket::class)
-        registerPacket(2, null, IdentifyPacket::class)
-        registerPacket(3, null, PresenceUpdatePacket::class)
-        registerPacket(10, null, HelloPacket::class)
-        registerPacket(11, null, HeartbeatAckPacket::class)
+        registerPacket(1, null, HeartbeatPacket::class.java)
+        registerPacket(2, null, IdentifyPacket::class.java)
+        registerPacket(3, null, PresenceUpdatePacket::class.java)
+        registerPacket(10, null, HelloPacket::class.java)
+        registerPacket(11, null, HeartbeatAckPacket::class.java)
     }
 
     // Extensible Functions
@@ -106,7 +110,7 @@ public abstract class DiskoGateway(
     protected open fun onInvalidMessage(text: String) {
     }
 
-    protected open fun onInvalidPacket(text: String) {
+    protected open fun onInvalidPacket(text: String, packet: Class<out Packet>?, type: InvalidPacketType) {
     }
 
     protected open fun onDisconnected(code: CloseCode, reason: String) {
@@ -128,7 +132,7 @@ public abstract class DiskoGateway(
      */
     public fun send(packet: SendablePacket) {
         val op = packets.entries.find {
-            it.value == packet::class
+            it.value == packet::class.java
         }?.key?.first ?: throw UnregisteredPacketException("Packet ${packet::class.simpleName} is not registered in the packet registry.")
         val json = packet.createSendPayload(this)
 
@@ -157,7 +161,7 @@ public abstract class DiskoGateway(
     public fun registerPacket(
         op: Int,
         name: String?,
-        packet: KClass<out Packet>
+        packet: Class<out Packet>
     ) {
         packets[Pair(op, name)] = packet
     }
@@ -202,7 +206,14 @@ public abstract class DiskoGateway(
 
         val rawJson = text.parseJson()
         if (!rawJson.isJsonObject || !rawJson.asJsonObject.has("op") || !rawJson.asJsonObject.has("t")) {
-            onInvalidPacket(text)
+            val type = when {
+                !rawJson.isJsonObject -> InvalidPacketType.NOT_JSON
+                !rawJson.asJsonObject.has("op") -> InvalidPacketType.MISSING_OPCODE
+                !rawJson.asJsonObject.has("t") -> InvalidPacketType.MISSING_NAME
+                else -> throw IllegalStateException("This should never happen.")
+            }
+
+            onInvalidPacket(text, null, type)
             return
         }
 
@@ -212,22 +223,22 @@ public abstract class DiskoGateway(
         if (name == "READY")
             hasIdentified = true
 
+
         val data = json.maybeGetJsonObject("d")
         if (op == null && name == null) {
-            onInvalidPacket(text)
+            onInvalidPacket(text, null, InvalidPacketType.BAD_OPCODE_AND_NAME)
             return
         }
 
-        val packet = packets[Pair(op, name)] ?: return
-        if (packet.isInstance(ReceivablePacket::class)) {
-            onInvalidPacket(text)
+        val packet = packets[Pair(op, name)]
+        if (packet == null) {
+            onInvalidPacket(text, null, InvalidPacketType.UNREGISTERED)
             return
         }
 
         lastSequence = json.maybeGetInteger("s")
-
-        val instance = packet.constructors.first().call()
-        (instance as? ReceivablePacket)?.handlePayloadReceived(this, data) ?: onInvalidPacket(text)
+        val instance = packet.constructors.first().newInstance() as? Packet ?: onInvalidPacket(text, packet, InvalidPacketType.INSTANCE_CREATION_FAILED)
+        (instance as? ReceivablePacket)?.handlePayloadReceived(this, data) ?: onInvalidPacket(text, packet, InvalidPacketType.NOT_RECEIVABLE)
     }
 
     // WebSocketListener Implementation
@@ -253,4 +264,15 @@ public abstract class DiskoGateway(
     final override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         // TODO: Implement
     }
+
+    protected enum class InvalidPacketType {
+        NOT_JSON,
+        MISSING_OPCODE,
+        MISSING_NAME,
+        BAD_OPCODE_AND_NAME,
+        UNREGISTERED,
+        INSTANCE_CREATION_FAILED,
+        NOT_RECEIVABLE
+    }
+
 }
