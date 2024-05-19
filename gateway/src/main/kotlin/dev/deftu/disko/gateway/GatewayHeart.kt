@@ -19,6 +19,7 @@
 package dev.deftu.disko.gateway
 
 import com.google.gson.JsonObject
+import dev.deftu.disko.gateway.exceptions.BrokenGatewayException
 import dev.deftu.disko.gateway.packets.HeartbeatPacket
 import dev.deftu.disko.gateway.packets.IdentifyPacket
 import dev.deftu.disko.utils.maybeGetLong
@@ -38,7 +39,7 @@ public class GatewayHeart(
     private var missedBeats = 0
 
     public fun hello(data: JsonObject) {
-        lifetimeInterval = data.maybeGetLong("heartbeat_interval") ?: return
+        lifetimeInterval = data.maybeGetLong("heartbeat_interval") ?: throw BrokenGatewayException("Received hello without heartbeat interval.")
         receivedHello = true
 
         val jitter = (lifetimeInterval * Math.random()).roundToLong()
