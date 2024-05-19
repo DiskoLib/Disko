@@ -18,8 +18,8 @@
 
 import dev.deftu.disko.gateway.DefaultDiskoGateway
 import dev.deftu.disko.gateway.DiskoGateway
-import dev.deftu.disko.gateway.presence.PresenceUpdate
-import dev.deftu.disko.presence.Activity
+import dev.deftu.disko.gateway.GatewayIntent
+import dev.deftu.disko.gateway.presence.Activity
 import dev.deftu.disko.presence.Status
 import okhttp3.OkHttpClient
 import org.slf4j.LoggerFactory
@@ -32,11 +32,16 @@ fun main() {
     val httpClient = OkHttpClient.Builder()
         .pingInterval(60, TimeUnit.SECONDS)
         .build()
-    val gateway = DefaultDiskoGateway(System.getenv("TOKEN"))
+    val gateway = DefaultDiskoGateway(
+        name = "@PROJECT_NAME@",
+        token = System.getenv("TOKEN"),
+        intents = GatewayIntent.all,
+    )
+
     gateway.setPresence {
         status = Status.DND
         activities {
-            +Activity.Playing("with Disko")
+            +Activity.playing("Disko is so cool :3")
         }
     }
 
