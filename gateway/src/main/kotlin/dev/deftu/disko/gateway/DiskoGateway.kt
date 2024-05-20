@@ -27,6 +27,7 @@ import dev.deftu.disko.utils.*
 import kotlinx.coroutines.CoroutineScope
 import okhttp3.*
 import okio.ByteString
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -42,6 +43,7 @@ public abstract class DiskoGateway(
     final override val coroutineContext: CoroutineContext,
     public val name: String,
     public val token: String,
+    public val httpClient: OkHttpClient,
     public val intents: List<GatewayIntent>,
     public val threshold: Int = 250,
     public val shard: Shard = Shard(0, 1)
@@ -63,6 +65,13 @@ public abstract class DiskoGateway(
                 .build()
             httpClient.newWebSocket(request, gateway)
         }
+        public fun createOptimalHttpClientBuilder(): OkHttpClient.Builder =
+            OkHttpClient.Builder()
+                .pingInterval(60, TimeUnit.SECONDS)
+
+        @JvmStatic
+        public fun createOptimalHttpClient(): OkHttpClient =
+            createOptimalHttpClientBuilder().build()
 
     }
 

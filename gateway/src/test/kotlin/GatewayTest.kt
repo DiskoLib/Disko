@@ -25,16 +25,16 @@ import okhttp3.OkHttpClient
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 
+private const val NAME = "@PROJECT_NAME@"
 private val logger = LoggerFactory.getLogger("TestBot")
 
 fun main() {
-    logger.info("Starting Disko Gateway...")
-    val httpClient = OkHttpClient.Builder()
-        .pingInterval(60, TimeUnit.SECONDS)
-        .build()
+    logger.info("Starting test Disko Gateway...")
+    val token = System.getenv("TOKEN") ?: error("No token provided.")
     val gateway = DefaultDiskoGateway(
-        name = "@PROJECT_NAME@",
-        token = System.getenv("TOKEN"),
+        name = NAME,
+        token = token,
+        httpClient = DiskoGateway.createOptimalHttpClient(),
         intents = GatewayIntent.all,
     )
 

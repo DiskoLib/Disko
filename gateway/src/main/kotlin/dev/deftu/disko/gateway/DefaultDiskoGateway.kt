@@ -21,11 +21,13 @@ package dev.deftu.disko.gateway
 import dev.deftu.disko.gateway.packets.Packet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import okhttp3.OkHttpClient
 import org.slf4j.LoggerFactory
 
 public class DefaultDiskoGateway(
     name: String,
     token: String,
+    httpClient: OkHttpClient,
     intents: List<GatewayIntent>,
     threshold: Int = 250,
     shard: Shard = Shard(0, 1) // Non-sharded bots will always have a shard ID of 0.
@@ -33,6 +35,7 @@ public class DefaultDiskoGateway(
     coroutineContext = Dispatchers.Default + SupervisorJob(),
     name = name,
     token = token,
+    httpClient = httpClient,
     intents = intents,
     threshold = threshold,
     shard = shard
