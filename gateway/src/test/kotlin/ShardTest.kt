@@ -1,3 +1,12 @@
+import dev.deftu.disko.gateway.DefaultDiskoGateway
+import dev.deftu.disko.gateway.DiskoGateway
+import dev.deftu.disko.gateway.GatewayIntent
+import dev.deftu.disko.gateway.Sharder
+import dev.deftu.disko.gateway.presence.Activity
+import dev.deftu.disko.presence.Status
+import dev.deftu.disko.utils.ApiVersion
+import org.slf4j.LoggerFactory
+
 /*
  * Copyright (C) 2024 Deftu and the Disko contributors
  *
@@ -16,39 +25,38 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import dev.deftu.disko.gateway.DefaultDiskoGateway
-import dev.deftu.disko.gateway.DiskoGateway
-import dev.deftu.disko.gateway.GatewayIntent
-import dev.deftu.disko.gateway.presence.Activity
-import dev.deftu.disko.presence.Status
-import org.slf4j.LoggerFactory
-
 private const val NAME = "@PROJECT_NAME@"
 private val logger = LoggerFactory.getLogger("TestBot")
 
 fun main() {
-    logger.info("Starting test Disko Gateway...")
+    logger.info("Starting test Disko Sharding Manager...")
     val token = System.getenv("TOKEN") ?: error("No token provided.")
-    val gateway = DefaultDiskoGateway(
-        name = NAME,
+    val sharder = Sharder(
         token = token,
         httpClient = DiskoGateway.createOptimalHttpClient(),
-        intents = GatewayIntent.all,
-    )
+        gatewayBuilder = { token, httpClient, shard ->
+            DefaultDiskoGateway(
+                name = NAME,
+                token = token,
+                httpClient = httpClient,
+                intents = GatewayIntent.all
+            )
+        }
+    ).login(ApiVersion.V10)
 
-    gateway.setPresence {
-        status = Status.DND
-        activities {
-            +Activity.playing("Disko is so cool :3")
+    sharder.forEach { shard, gateway ->
+        gateway.setPresence {
+            status = Status.DND
+            activities {
+                +Activity.playing("[${shard.id + 1}/${shard.total}] Disko is so cool :3")
+            }
         }
     }
 
     // TODO - Maybe add a shutdown hook to close the gateway?
     Runtime.getRuntime().addShutdownHook(Thread({
         logger.info("Shutting down Disko Test Bot...")
-        gateway.close(1000, "Shutting down")
+        sharder.close(1000, "Shutting down")
         logger.info("Disko Test Bot has been shut down.")
     }, "Disko Test Bot Shutdown"))
-
-    gateway.login()
 }

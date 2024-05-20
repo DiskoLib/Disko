@@ -53,7 +53,7 @@ public abstract class DiskoGateway(
 
         @JvmStatic
         public fun createGatewayUrl(version: ApiVersion): String =
-            "wss://gateway.discord.gg/?v=${version.value}&encoding=json"
+            "wss://gateway.discord.gg/?v=${version.number}&encoding=json"
 
         @JvmStatic
         public fun createOptimalHttpClientBuilder(): OkHttpClient.Builder =

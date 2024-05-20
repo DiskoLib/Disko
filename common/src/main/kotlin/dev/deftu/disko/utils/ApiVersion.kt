@@ -22,11 +22,14 @@ package dev.deftu.disko.utils
  * Enumerable values of the currently available Discord API versions.
  */
 public enum class ApiVersion(
-    public val value: Int
+    public val number: Int
 ) {
     V6(6),
     V7(7),
     V8(8),
     V9(9),
-    V10(10)
+    V10(10);
+
+    public val formatted: String
+        get() = "v$number"
 }
