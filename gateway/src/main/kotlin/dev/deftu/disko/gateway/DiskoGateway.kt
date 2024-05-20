@@ -56,15 +56,6 @@ public abstract class DiskoGateway(
             "wss://gateway.discord.gg/?v=${version.value}&encoding=json"
 
         @JvmStatic
-        public fun connect(
-            httpClient: OkHttpClient,
-            gateway: DiskoGateway
-        ) {
-            val request = Request.Builder()
-                .url(createGatewayUrl(ApiVersion.V9))
-                .build()
-            httpClient.newWebSocket(request, gateway)
-        }
         public fun createOptimalHttpClientBuilder(): OkHttpClient.Builder =
             OkHttpClient.Builder()
                 .pingInterval(60, TimeUnit.SECONDS)
@@ -126,6 +117,13 @@ public abstract class DiskoGateway(
     }
 
     // DiskoGateway Implementation
+
+    public open fun login() {
+        val request = Request.Builder()
+            .url(createGatewayUrl(ApiVersion.V9))
+            .build()
+        webSocket = httpClient.newWebSocket(request, this)
+    }
 
     /**
      * Sends a packet to Discord's Gateway API - Automatically inferring its opcode from the packet registry.

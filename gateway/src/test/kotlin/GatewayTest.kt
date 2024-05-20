@@ -52,5 +52,5 @@ fun main() {
         logger.info("Disko Test Bot has been shut down.")
     }, "Disko Test Bot Shutdown"))
 
-    DiskoGateway.connect(httpClient, gateway)
+    gateway.login()
 }
