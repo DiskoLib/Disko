@@ -92,9 +92,10 @@ public object CDN {
         return CdnUrl("$BASE_URL/team-icons/$id/$hash")
     }
 
-    public fun sticker(id: Snowflake): CdnUrl {
-        return CdnUrl("$BASE_URL/stickers/$id")
-    }
+    // TODO
+    // public fun sticker(id: Snowflake): CdnUrl {
+    //     return CdnUrl("$BASE_URL/stickers/$id")
+    // }
 
     public fun roleIcon(id: Snowflake, hash: String): CdnUrl {
         return CdnUrl("$BASE_URL/role-icons/$id/$hash")
