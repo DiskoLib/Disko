@@ -22,6 +22,7 @@ public enum class CloseCode(
     public val code: Int,
     public val isReconnectable: Boolean,
 ) {
+    NORMAL(1000, true),
     UNKNOWN_ERROR(4000, true),
     UNKNOWN_OPCODE(4001, false),
     DECODE_ERROR(4002, false),
@@ -38,8 +39,10 @@ public enum class CloseCode(
     DISALLOWED_INTENT(4014, false);
 
     public companion object {
+
         public fun fromCode(code: Int): CloseCode =
             @Suppress("EnumValuesSoftDeprecate") // Not all use cases may use newer versions of Kotlin
             values().find { it.code == code } ?: UNKNOWN_ERROR
+
     }
 }
