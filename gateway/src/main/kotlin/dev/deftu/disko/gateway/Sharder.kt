@@ -96,4 +96,10 @@ public open class Sharder(
         shards.forEach(action)
     }
 
+    public fun registerShutdownHook(): Sharder = apply {
+        Runtime.getRuntime().addShutdownHook(Thread({
+            close(CloseCode.NORMAL, "Shutting down")
+        }, "Disko Sharder Shutdown"))
+    }
+
 }

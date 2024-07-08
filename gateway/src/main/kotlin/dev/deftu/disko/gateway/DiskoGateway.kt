@@ -222,6 +222,12 @@ public abstract class DiskoGateway(
         close(code.code, reason)
     }
 
+    public fun registerShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(Thread({
+            close(CloseCode.NORMAL, "Shutting down.")
+        }, "Disko Default Shutdown Hook"))
+    }
+
     private fun handleMessage(text: String) {
         if (!isValidJson(text)) {
             onInvalidMessage(text)
