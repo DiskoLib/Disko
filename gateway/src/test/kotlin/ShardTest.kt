@@ -1,12 +1,3 @@
-import dev.deftu.disko.gateway.DefaultDiskoGateway
-import dev.deftu.disko.gateway.DiskoGateway
-import dev.deftu.disko.gateway.GatewayIntent
-import dev.deftu.disko.gateway.Sharder
-import dev.deftu.disko.gateway.presence.Activity
-import dev.deftu.disko.presence.Status
-import dev.deftu.disko.utils.ApiVersion
-import org.slf4j.LoggerFactory
-
 /*
  * Copyright (C) 2024 Deftu and the Disko contributors
  *
@@ -25,6 +16,15 @@ import org.slf4j.LoggerFactory
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import dev.deftu.disko.gateway.DefaultDiskoGateway
+import dev.deftu.disko.gateway.DiskoGateway
+import dev.deftu.disko.gateway.GatewayIntent
+import dev.deftu.disko.gateway.Sharder
+import dev.deftu.disko.gateway.presence.Activity
+import dev.deftu.disko.presence.Status
+import dev.deftu.disko.utils.ApiVersion
+import org.slf4j.LoggerFactory
+
 private const val NAME = "@PROJECT_NAME@"
 private val logger = LoggerFactory.getLogger("TestBot")
 
@@ -42,7 +42,7 @@ fun main() {
                 intents = GatewayIntent.all
             )
         }
-    ).login(ApiVersion.V10)
+    ).registerShutdownHook().login(ApiVersion.V10)
 
     sharder.forEach { shard, gateway ->
         gateway.setPresence {
@@ -52,11 +52,4 @@ fun main() {
             }
         }
     }
-
-    // TODO - Maybe add a shutdown hook to close the gateway?
-    Runtime.getRuntime().addShutdownHook(Thread({
-        logger.info("Shutting down Disko Test Bot...")
-        sharder.close(1000, "Shutting down")
-        logger.info("Disko Test Bot has been shut down.")
-    }, "Disko Test Bot Shutdown"))
 }
