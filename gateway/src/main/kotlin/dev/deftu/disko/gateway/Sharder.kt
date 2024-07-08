@@ -86,6 +86,12 @@ public open class Sharder(
         }
     }
 
+    public fun close(code: CloseCode, reason: String) {
+        for ((_, gateway) in shards) {
+            gateway.close(code, reason)
+        }
+    }
+
     public fun forEach(action: (shard: Shard, gateway: DiskoGateway) -> Unit) {
         shards.forEach(action)
     }
