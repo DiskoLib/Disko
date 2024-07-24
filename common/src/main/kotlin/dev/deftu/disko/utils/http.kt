@@ -20,5 +20,6 @@ package dev.deftu.disko.utils
 
 import okhttp3.Request
 
-public fun Request.Builder.authorized(token: String): Request.Builder =
-    this.header("Authorization", "Bot $token")
+public fun Request.Builder.authorized(token: String): Request.Builder {
+    return this.header("Authorization", "Bot $token")
+}

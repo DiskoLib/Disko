@@ -21,6 +21,7 @@ package dev.deftu.disko.presence
 import dev.deftu.disko.utils.BitsetFlag
 
 public enum class ActivityFlag(override val offset: Int) : BitsetFlag {
+
     INSTANCE(0),
     JOIN(1),
     SPECTATE(2),

@@ -25,6 +25,7 @@ package dev.deftu.disko.presence
  * @author Deftu
  */
 public enum class ActivityType {
+
     /**
      * The user is playing a game.
      */
@@ -54,4 +55,5 @@ public enum class ActivityType {
      * The user is competing in a game.
      */
     COMPETING,
+
 }

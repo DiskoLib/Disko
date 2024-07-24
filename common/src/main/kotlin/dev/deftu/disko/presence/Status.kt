@@ -31,9 +31,11 @@ public enum class Status(
     public val value: String,
     public val description: String
 ) {
+
     ONLINE("online", "Online"),
     DND("dnd", "Do Not Disturb"),
     IDLE("idle", "Idle"),
     INVISIBLE("invisible", "Invisible"),
     OFFLINE("offline", "Offline")
+
 }

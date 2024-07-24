@@ -24,6 +24,7 @@ package dev.deftu.disko.utils
 public enum class ApiVersion(
     public val number: Int
 ) {
+
     V6(6),
     V7(7),
     V8(8),
@@ -32,4 +33,5 @@ public enum class ApiVersion(
 
     public val formatted: String
         get() = "v$number"
+
 }
