@@ -120,7 +120,7 @@ public abstract class DiskoGateway(
 
     public open fun login() {
         val request = Request.Builder()
-            .url(createGatewayUrl(ApiVersion.V9))
+            .url(createGatewayUrl(ApiVersion.V10))
             .build()
         webSocket = httpClient.newWebSocket(request, this)
     }
