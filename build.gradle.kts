@@ -6,10 +6,11 @@ plugins {
     java
     kotlin("jvm") version("1.9.10")
     val dgt = "1.26.0"
+    val dgt = "2.5.0"
     id("dev.deftu.gradle.tools") version(dgt)
     id("dev.deftu.gradle.tools.dokka") version(dgt)
-    id("dev.deftu.gradle.tools.blossom") version(dgt)
-    id("dev.deftu.gradle.tools.maven-publishing") version(dgt)
+    id("dev.deftu.gradle.tools.bloom") version(dgt)
+    id("dev.deftu.gradle.tools.publishing.maven") version(dgt)
 }
 
 subprojects {
@@ -17,8 +18,8 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "dev.deftu.gradle.tools")
     apply(plugin = "dev.deftu.gradle.tools.dokka")
-    apply(plugin = "dev.deftu.gradle.tools.blossom")
-    apply(plugin = "dev.deftu.gradle.tools.maven-publishing")
+    apply(plugin = "dev.deftu.gradle.tools.bloom")
+    apply(plugin = "dev.deftu.gradle.tools.publishing.maven")
 
     val projectDisplayName = rootProject.findProperty("project.displayName") as? String
         ?: throw IllegalStateException("project.displayName is not set")
