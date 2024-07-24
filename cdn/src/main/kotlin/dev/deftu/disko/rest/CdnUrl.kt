@@ -19,6 +19,7 @@
 package dev.deftu.disko.rest
 
 import dev.deftu.disko.utils.ImageFormat
+import java.util.function.Consumer
 
 public data class CdnUrl(
     private val rawUrl: String
@@ -28,8 +29,16 @@ public data class CdnUrl(
         return toUrl(CdnUrlFormatter())
     }
 
-    public fun toUrl(formatter: CdnUrlFormatter.() -> Unit): String {
-        return toUrl(CdnUrlFormatter().apply(formatter))
+    public fun toUrl(block: CdnUrlFormatter.() -> Unit): String {
+        val formatter = CdnUrlFormatter()
+        formatter.block()
+        return toUrl(formatter)
+    }
+
+    public fun toUrl(block: Consumer<CdnUrlFormatter>): String {
+        val formatter = CdnUrlFormatter()
+        block.accept(formatter)
+        return toUrl(formatter)
     }
 
     public fun toUrl(formatter: CdnUrlFormatter): String {
@@ -41,10 +50,13 @@ public data class CdnUrl(
 }
 
 public class CdnUrlFormatter {
+
     public var format: ImageFormat = ImageFormat.PNG
+
     public var size: Int? = null
         set(value) {
             require(value == null || value in 16..4096) { "Size must be between 16 and 4096" }
             field = value
         }
+
 }
