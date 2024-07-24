@@ -13,6 +13,7 @@ plugins {
 }
 
 subprojects {
+
     apply(plugin = "java")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "dev.deftu.gradle.tools")
@@ -28,7 +29,9 @@ subprojects {
     }
 
     dependencies {
-        if (project.name != "common") implementation(project(":common"))
+        if (project.name != "common") {
+            implementation(project(":common"))
+        }
 
         implementation(kotlin("reflect"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
@@ -65,4 +68,5 @@ subprojects {
             mergeImplicitExpectActualDeclarations = true
         }
     }
+
 }
