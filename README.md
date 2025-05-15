@@ -76,7 +76,7 @@ dependencies {
 
 ## Basic Usage
 ```kotlin
-import dev.deftu.disko.Disko
+import dev.deftu.disko.api.Disko
 
 fun main() {
     val disko = Disko {

@@ -4,20 +4,19 @@ import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
     java
-    kotlin("jvm") version("2.0.0")
-    val dgt = "2.5.0"
+    kotlin("jvm") version("2.0.10")
+    val dgt = "2.34.0"
     id("dev.deftu.gradle.tools") version(dgt)
-    id("dev.deftu.gradle.tools.dokka") version(dgt)
+    id("dev.deftu.gradle.tools.jvm.dokka") version(dgt)
     id("dev.deftu.gradle.tools.bloom") version(dgt)
     id("dev.deftu.gradle.tools.publishing.maven") version(dgt)
 }
 
 subprojects {
-
     apply(plugin = "java")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "dev.deftu.gradle.tools")
-    apply(plugin = "dev.deftu.gradle.tools.dokka")
+    apply(plugin = "dev.deftu.gradle.tools.jvm.dokka")
     apply(plugin = "dev.deftu.gradle.tools.bloom")
     apply(plugin = "dev.deftu.gradle.tools.publishing.maven")
 
@@ -47,6 +46,8 @@ subprojects {
         implementation("org.slf4j:slf4j-api:${rootProject.libs.versions.slf4j.get()}")
 
         //// Testing
+        testImplementation(kotlin("test"))
+
         // Logging (Log4j)
         testImplementation("org.apache.logging.log4j:log4j-api:${rootProject.libs.versions.log4j.get()}")
         testImplementation("org.apache.logging.log4j:log4j-core:${rootProject.libs.versions.log4j.get()}")

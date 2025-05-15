@@ -41,4 +41,6 @@ bin/
 
 ### Project ###
 logs
+run
+old_gateway
 old_src
